@@ -58,7 +58,7 @@ export const NAV_LINKS = [
   {
     id: "source-code",
     title: "Source Code",
-    link: "http://www.github.com/sanidhyy/3d-portfolio",
+    link: "http://www.github.com/gurudeepdeeps/gurudeep-portfolio",
   },
 ] as const;
 
@@ -362,21 +362,21 @@ export const SOCIALS = [
   {
     name: "YouTube",
     icon: youtube,
-    link: "https://www.youtube.com/@OPGAMER.",
+    link: "https://www.youtube.com/@DeepsPlayzYT",
   },
   {
     name: "Linkedin",
     icon: linkedin,
-    link: "https://www.linkedin.com/in/sanidhyy",
+    link: "https://www.linkedin.com/in/gurudeepdeeps",
   },
   {
     name: "Twitter",
     icon: twitter,
-    link: "https://x.com/_sanidhyy",
+    link: "https://x.com/_gurudeepdeeps",
   },
   {
     name: "GitHub",
     icon: github,
-    link: "https://github.com/sanidhyy",
+    link: "https://github.com/gurudeepdeeps",
   },
 ] as const;

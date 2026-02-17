@@ -14,6 +14,7 @@ export const Contact = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     message: "",
   });
   const [loading, setLoading] = useState(false);
@@ -101,6 +102,7 @@ export const Contact = () => {
           to_name: "Shubham",
           from_email: form.email.trim().toLowerCase(),
           to_email: import.meta.env.VITE_APP_EMAILJS_RECIEVER,
+          phone: form.phone || "Not provided",
           message: form.message,
         },
         import.meta.env.VITE_APP_EMAILJS_KEY,
@@ -116,6 +118,7 @@ export const Contact = () => {
         setForm({
           name: "",
           email: "",
+          phone: "",
           message: "",
         });
       });
@@ -180,6 +183,23 @@ export const Contact = () => {
               <span className="text-red-400 mt-2 hidden" id="email-error">
                 Invalid E-mail!
               </span>
+            </label>
+
+            {/* Phone */}
+            <label htmlFor="phone" className="flex flex-col">
+              <span className="text-white font-medium mb-4">Your Phone</span>
+              <input
+                type="tel"
+                name="phone"
+                id="phone"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="+91-1234567890"
+                title="What's your phone number?"
+                disabled={loading}
+                aria-disabled={loading}
+                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60"
+              />
             </label>
 
             {/* Message */}

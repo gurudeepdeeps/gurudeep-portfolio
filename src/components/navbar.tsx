@@ -7,11 +7,11 @@ import { styles } from "../styles";
 import { cn } from "../utils/lib";
 
 type NavbarProps = {
-  hide: boolean;
+  hide?: boolean;
 };
 
 // Navbar
-export const Navbar = ({ hide }: NavbarProps) => {
+export const Navbar = ({ hide = true }: NavbarProps) => {
   // state variables
   const [active, setActive] = useState("");
   const [toggle, setToggle] = useState(false);
