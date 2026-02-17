@@ -1,16 +1,16 @@
 <a name="readme-top"></a>
 
-# Modern 3D Portfolio using React, Three.js and Typescript
+# Gurudeep Portfolio
 
-![Modern 3D Portfolio using React, Three.js and Typescript](/.github/images/img_main.png "Modern 3D Portfolio using React, Three.js and Typescript")
+![Gurudeep Portfolio](/.github/images/img_main.png "Gurudeep Portfolio")
 
 [![Ask Me Anything!](https://flat.badgen.net/static/Ask%20me/anything?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy "Ask Me Anything!")
-[![GitHub license](https://flat.badgen.net/github/license/sanidhyy/3d-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/3d-portfolio/blob/main/LICENSE "GitHub license")
-[![Maintenance](https://flat.badgen.net/static/Maintained/yes?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/3d-portfolio/commits/main "Maintenance")
-[![GitHub branches](https://flat.badgen.net/github/branches/sanidhyy/3d-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/3d-portfolio/branches "GitHub branches")
-[![Github commits](https://flat.badgen.net/github/commits/sanidhyy/3d-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/3d-portfolio/commits "Github commits")
-[![GitHub issues](https://flat.badgen.net/github/issues/sanidhyy/3d-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/3d-portfolio/issues "GitHub issues")
-[![GitHub pull requests](https://flat.badgen.net/github/prs/sanidhyy/3d-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/3d-portfolio/pulls "GitHub pull requests")
+[![GitHub license](https://flat.badgen.net/github/license/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/blob/main/LICENSE "GitHub license")
+[![Maintenance](https://flat.badgen.net/static/Maintained/yes?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/commits/main "Maintenance")
+[![GitHub branches](https://flat.badgen.net/github/branches/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/branches "GitHub branches")
+[![Github commits](https://flat.badgen.net/github/commits/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/commits "Github commits")
+[![GitHub issues](https://flat.badgen.net/github/issues/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/issues "GitHub issues")
+[![GitHub pull requests](https://flat.badgen.net/github/prs/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/pulls "GitHub pull requests")
 [![Netlify status](https://api.netlify.com/api/v1/badges/5c77ba92-e2f5-468e-99f1-3543906a90cb/deploy-status)](https://shubam.netlify.app/ "Netlify status")
 
 <!-- Table of Contents -->
@@ -44,7 +44,7 @@
 Here is the folder structure of this app.
 
 ```bash
-3d-portfolio/
+gurudeep-portfolio/
   |- public/
     |-- desktop_pc/
     |-- planet/
@@ -170,7 +170,7 @@ VITE_APP_EMAILJS_RECIEVER=your@email.com
 
 ## :wrench: Stats
 
-[![Stats for 3D Portfolio](/.github/images/stats.svg "Stats for 3D Portfolio")](https://pagespeed.web.dev/analysis?url=https://shubam.netlify.app/ "Stats for 3D Portfolio")
+[![Stats for Gurudeep Portfolio](/.github/images/stats.svg "Stats for Gurudeep Portfolio")](https://pagespeed.web.dev/analysis?url=https://shubam.netlify.app/ "Stats for Gurudeep Portfolio")
 
 ## :raised_hands: Contribute
 
@@ -178,7 +178,7 @@ You might encounter some bugs while using this app. You are more than welcome to
 
 ## :gem: Acknowledgements
 
-Useful resources and dependencies that are used in 3D Portfolio.
+Useful resources and dependencies that are used in Gurudeep Portfolio.
 
 - [@emailjs/browser](https://www.npmjs.com/package/@emailjs/browser): ^3.11.0
 - [@react-three/drei](https://www.npmjs.com/package/@react-three/drei): ^9.96.1
@@ -257,11 +257,11 @@ You can also give this repository a star to show more people and they can use th
 
 ## :star2: Star History
 
-<a href="https://star-history.com/#sanidhyy/3d-portfolio&Timeline">
+<a href="https://star-history.com/#sanidhyy/gurudeep-portfolio&Timeline">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=sanidhyy/3d-portfolio&type=Timeline&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=sanidhyy/3d-portfolio&type=Timeline" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=sanidhyy/3d-portfolio&type=Timeline" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=sanidhyy/gurudeep-portfolio&type=Timeline&theme=dark" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=sanidhyy/gurudeep-portfolio&type=Timeline" />
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=sanidhyy/gurudeep-portfolio&type=Timeline" />
 </picture>
 </a>
 

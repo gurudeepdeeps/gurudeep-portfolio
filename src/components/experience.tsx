@@ -49,9 +49,8 @@ const ExperienceCard = ({ experience }: ExperienceCardProps) => (
         <li
           key={`experience-point-${i}`}
           className="text-white-100 text-[14px] pl-1 tracking-wider"
-        >
-          {point}
-        </li>
+          dangerouslySetInnerHTML={{ __html: point }}
+        />
       ))}
     </ul>
   </VerticalTimelineElement>
