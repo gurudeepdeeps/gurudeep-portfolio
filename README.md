@@ -4,14 +4,15 @@
 
 ![Gurudeep Portfolio](/.github/images/img_main.png "Gurudeep Portfolio")
 
-[![Ask Me Anything!](https://flat.badgen.net/static/Ask%20me/anything?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy "Ask Me Anything!")
-[![GitHub license](https://flat.badgen.net/github/license/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/blob/main/LICENSE "GitHub license")
-[![Maintenance](https://flat.badgen.net/static/Maintained/yes?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/commits/main "Maintenance")
-[![GitHub branches](https://flat.badgen.net/github/branches/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/branches "GitHub branches")
-[![Github commits](https://flat.badgen.net/github/commits/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/commits "Github commits")
-[![GitHub issues](https://flat.badgen.net/github/issues/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/issues "GitHub issues")
-[![GitHub pull requests](https://flat.badgen.net/github/prs/sanidhyy/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/gurudeep-portfolio/pulls "GitHub pull requests")
-[![Netlify status](https://api.netlify.com/api/v1/badges/5c77ba92-e2f5-468e-99f1-3543906a90cb/deploy-status)](https://shubam.netlify.app/ "Netlify status")
+[![Ask Me Anything!](https://flat.badgen.net/static/Ask%20me/anything?icon=github&color=black&scale=1.01)](https://github.com/gurudeepdeeps "Ask Me Anything!")
+[![GitHub license](https://flat.badgen.net/github/license/gurudeepdeeps/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/gurudeepdeeps/gurudeep-portfolio/blob/main/LICENSE "GitHub license")
+[![Maintenance](https://flat.badgen.net/static/Maintained/yes?icon=github&color=black&scale=1.01)](https://github.com/gurudeepdeeps/gurudeep-portfolio/commits/main "Maintenance")
+[![GitHub branches](https://flat.badgen.net/github/branches/gurudeepdeeps/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/gurudeepdeeps/gurudeep-portfolio/branches "GitHub branches")
+[![Github commits](https://flat.badgen.net/github/commits/gurudeepdeeps/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/gurudeepdeeps/gurudeep-portfolio/commits "Github commits")
+[![GitHub issues](https://flat.badgen.net/github/issues/gurudeepdeeps/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/gurudeepdeeps/gurudeep-portfolio/issues "GitHub issues")
+[![GitHub pull requests](https://flat.badgen.net/github/prs/gurudeepdeeps/gurudeep-portfolio?icon=github&color=black&scale=1.01)](https://github.com/gurudeepdeeps/gurudeep-portfolio/pulls "GitHub pull requests")
+[![Netlify status](https://api.netlify.com/api/v1/badges/5c77ba92-e2f5-468e-99f1-3543906a90cb/deploy-status)](https://gurudeepv-portfolio.netlify.app/ "Netlify status")
+[![Vercel status](https://img.shields.io/badge/Vercel-deployed-black?logo=vercel&logoColor=white)](https://gurudeep-portfolio.vercel.app/ "Vercel status")
 
 <!-- Table of Contents -->
 <details>
@@ -47,23 +48,27 @@ Here is the folder structure of this app.
 gurudeep-portfolio/
   |- public/
     |-- desktop_pc/
+        |--- license.txt
+        |--- textures/
     |-- planet/
-    |-- apple-touch-icon.png
-    |-- favicon.ico
-    |-- favicon16.png
-    |-- favicon32.png
+        |--- license.txt
+        |--- textures/
+    |-- project-images/
   |- src/
     |-- assets/
         |--- company/
-        |--- projects/
         |--- socials/
         |--- tech/
         |--- testimonials/
         |--- index.ts
     |-- components/
         |--- canvas/
+            |---- ball.tsx
+            |---- computers.tsx
+            |---- earth.tsx
+            |---- index.ts
+            |---- stars.tsx
         |--- about.tsx
-        |--- banner.tsx
         |--- contact.tsx
         |--- experience.tsx
         |--- feedbacks.tsx
@@ -87,11 +92,9 @@ gurudeep-portfolio/
     |-- index.css
     |-- main.tsx
     |-- styles.ts
-  |- .env
-  |- .env.example
-  |- .gitignore
   |- index.html
-  |- package-lock.json
+  |- LICENSE.md
+  |- README.md
   |- package.json
   |- postcss.config.cjs
   |- tailwind.config.ts
@@ -170,7 +173,9 @@ VITE_APP_EMAILJS_RECIEVER=your@email.com
 
 ## :wrench: Stats
 
-[![Stats for Gurudeep Portfolio](/.github/images/stats.svg "Stats for Gurudeep Portfolio")](https://pagespeed.web.dev/analysis?url=https://shubam.netlify.app/ "Stats for Gurudeep Portfolio")
+[![Stats for Gurudeep Portfolio](/.github/images/stats.svg "Stats for Gurudeep Portfolio")](https://pagespeed.web.dev/analysis?url=https://gurudeepv-portfolio.netlify.app/ "Stats for Gurudeep Portfolio")
+
+[![Stats for Gurudeep Portfolio](/.github/images/stats.svg "Stats for Gurudeep Portfolio")](https://pagespeed.web.dev/analysis?url=https://gurudeep-portfolio.vercel.app/ "Stats for Gurudeep Portfolio")
 
 ## :raised_hands: Contribute
 
@@ -207,13 +212,13 @@ Useful resources and dependencies that are used in Gurudeep Portfolio.
 
 ## :coffee: Buy Me a Coffee
 
-[<img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" width="200" />](https://www.buymeacoffee.com/sanidhy "Buy me a Coffee")
+[<img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" width="200" />](https://www.buymeacoffee.com/gurudeepv "Buy me a Coffee")
 
 ## :rocket: Follow Me
 
-[![GitHub followers](https://img.shields.io/github/followers/sanidhyy?style=social&label=Follow&maxAge=2592000)](https://github.com/sanidhyy "Follow Me")
-[![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fx.com%2F_sanidhyy)](https://x.com/intent/tweet?text=Check+out+this+amazing+app:&url=https%3A%2F%2Fgithub.com%2Fsanidhyy%2F3d-portfolio "Tweet")
-[![YouTube](https://img.shields.io/youtube/channel/subscribers/UCNAz_hUVBG2ZUN8TVm0bmYw)](https://www.youtube.com/@OPGAMER. "Subscribe my YouTube Channel")
+[![GitHub followers](https://img.shields.io/github/followers/gurudeepdeeps?style=social&label=Follow&maxAge=2592000)](https://github.com/gurudeepdeeps "Follow Me")
+[![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fx.com%2F_gurudeep_v)](https://x.com/intent/tweet?text=Check+out+this+amazing+app:&url=https%3A%2F%2Fgithub.com%2Fgurudeepdeeps%2F3d-portfolio "Tweet")
+[![YouTube](https://img.shields.io/youtube/channel/subscribers/UCNAz_hUVBG2ZUN8TVm0bmYw)](https://www.youtube.com/@DeepsPlayzYT "Subscribe my YouTube Channel")
 
 ## :books: Learn More
 
@@ -257,11 +262,11 @@ You can also give this repository a star to show more people and they can use th
 
 ## :star2: Star History
 
-<a href="https://star-history.com/#sanidhyy/gurudeep-portfolio&Timeline">
+<a href="https://star-history.com/#gurudeepdeeps/gurudeep-portfolio&Timeline">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=sanidhyy/gurudeep-portfolio&type=Timeline&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=sanidhyy/gurudeep-portfolio&type=Timeline" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=sanidhyy/gurudeep-portfolio&type=Timeline" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=gurudeepdeeps/gurudeep-portfolio&type=Timeline&theme=dark" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=gurudeepdeeps/gurudeep-portfolio&type=Timeline" />
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=gurudeepdeeps/gurudeep-portfolio&type=Timeline" />
 </picture>
 </a>
 
