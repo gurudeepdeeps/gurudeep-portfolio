@@ -1,4 +1,3 @@
-import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
 import { useState, useRef, type FormEvent, type ChangeEvent } from "react";
 import { toast } from "sonner";
@@ -82,7 +81,7 @@ export const Contact = () => {
   };
 
   // handle form submit
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     // prevent default page reload
     e.preventDefault();
 
@@ -92,36 +91,43 @@ export const Contact = () => {
     // show loader
     setLoading(true);
 
-    // send email
-    emailjs
-      .send(
-        import.meta.env.VITE_APP_SERVICE_ID,
-        import.meta.env.VITE_APP_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          to_name: "Shubham",
-          from_email: form.email.trim().toLowerCase(),
-          to_email: import.meta.env.VITE_APP_EMAILJS_RECIEVER,
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "06a786dc-0bc6-48eb-945e-3a080a34c91f",
+          name: form.name,
+          email: form.email.trim().toLowerCase(),
           phone: form.phone || "Not provided",
           message: form.message,
-        },
-        import.meta.env.VITE_APP_EMAILJS_KEY,
-      )
-      .then(() => toast.success("Thanks for contacting me."))
-      .catch((error) => {
-        // Error handle
-        console.log("[CONTACT_ERROR]: ", error);
-        toast.error("Something went wrong.");
-      })
-      .finally(() => {
-        setLoading(false);
+          from_name: "Gurudeep Portfolio Contact Form",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success("Thanks for contacting me.");
         setForm({
           name: "",
           email: "",
           phone: "",
           message: "",
         });
-      });
+      } else {
+        throw new Error(result.message || "Form submission failed");
+      }
+    } catch (error) {
+      // Error handle
+      console.error("[CONTACT_ERROR]: ", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
