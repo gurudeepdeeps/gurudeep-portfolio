@@ -3,7 +3,6 @@
 
 import { About } from "./about";
 import {
-  BallCanvas,
   ComputersCanvas,
   EarthCanvas,
   StarsCanvas,
@@ -13,12 +12,10 @@ import { Experience } from "./experience";
 import { Feedbacks } from "./feedbacks";
 import { Hero } from "./hero";
 import { Navbar } from "./navbar";
-import { Tech } from "./tech";
 import { Works } from "./works";
 
 export {
   About,
-  BallCanvas,
   ComputersCanvas,
   Contact,
   EarthCanvas,
@@ -27,6 +24,5 @@ export {
   Hero,
   Navbar,
   StarsCanvas,
-  Tech,
   Works,
 };
