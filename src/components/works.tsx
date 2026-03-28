@@ -22,16 +22,20 @@ const ProjectCard = ({
   source_code_link,
   live_site_link,
 }: ProjectCardProps) => (
-  <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
+  <motion.div variants={fadeIn("up", "spring", index * 0.1, 0.75)}>
     <Tilt
       options={{
         max: 45,
         scale: 1,
         speed: 450,
       }}
-      className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full"
+      className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full cursor-pointer"
     >
-      <div className="relative w-full h-[230px]">
+      <div
+        onClick={() => window.open(live_site_link, "_blank", "noreferrer")}
+        className="w-full h-full"
+      >
+        <div className="relative w-full h-[230px]">
         {/* Work image */}
         <img
           src={image}
@@ -39,36 +43,7 @@ const ProjectCard = ({
           className="w-full h-full object-cover rounded-2xl"
         />
 
-        {/* Live Site */}
-        <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
-          <div
-            onClick={() => window.open(live_site_link, "_blank", "noreferrer")}
-            className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
-          >
-            <img
-              src={preview}
-              alt="Live Site"
-              title="Live Site"
-              className="w-2/3 h-2/3 object-contain"
-            />
-          </div>
-
-          {/* Github */}
-          <div
-            onClick={() =>
-              window.open(source_code_link, "_blank", "noreferrer")
-            }
-            className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer ml-2"
-          >
-            <img
-              src={github}
-              alt="Github"
-              title="Github"
-              className="w-1/2 h-1/2 object-contain"
-            />
-          </div>
         </div>
-      </div>
 
       {/* Work Info */}
       <div className="mt-5">
@@ -83,6 +58,7 @@ const ProjectCard = ({
             #{tag.name}
           </p>
         ))}
+      </div>
       </div>
     </Tilt>
   </motion.div>
