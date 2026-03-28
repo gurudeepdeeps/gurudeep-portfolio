@@ -163,7 +163,7 @@ export const EXPERIENCES = [
       "Built responsive user interfaces with component-based architecture",
       "Integrated RESTful APIs and managed state using React hooks",
       "Collaborated with the team to deliver high-quality college web solutions",
-      'Visit Nexgen: <a href="https://nexgen-mca.netlify.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">nexgen-mca.netlify.app</a>',
+      'Visit Nexgen: <a href="https://nexgen-mca.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">nexgen-mca.vercel.app</a>',
     ],
   },
   {
@@ -190,7 +190,7 @@ export const EXPERIENCES = [
       "Built responsive user interfaces with component-based architecture",
       "Integrated RESTful APIs and managed state using React hooks",
       "Collaborated with the team to deliver high-quality web solutions",
-      'Visit Xpensive Media: <a href="https://xpensive-media.netlify.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">xpensive-media.netlify.app</a>',
+      'Visit Xpensive Media: <a href="https://xpensivemedia.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">xpensivemedia.vercel.app</a>',
     ],
   },
 ] as const;
@@ -240,8 +240,8 @@ export const PROJECTS = [
       },
     ],
     image: "/project-images/xpensivemedia.png",
-    source_code_link: "https://github.com/xpensivemedia/xpensivemedia",
-    live_site_link: "https://xpensive-media.netlify.app",
+    source_code_link: "https://github.com/gurudeepdeeps/xpensivemedia",
+    live_site_link: "https://xpensivemedia.vercel.app",
   },
   {
     name: "Likhiith Visuals",
@@ -277,7 +277,7 @@ export const PROJECTS = [
     ],
     image: "/project-images/nexgen.png",
     source_code_link: "https://github.com/gurudeepdeeps/nexgen",
-    live_site_link: "https://nexgen-mca.netlify.app",
+    live_site_link: "https://nexgen-mca.vercel.app",
   },
 ] as const;
 
