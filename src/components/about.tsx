@@ -21,13 +21,13 @@ const ServiceCard = ({ index, title, icon }: ServiceCardProps) => {
         scale: 1,
         speed: 450,
       }}
-      className="sm:w-[250px] w-[44%]"
+      className="sm:w-[250px] w-[46%]"
     >
       <motion.div
-        variants={fadeIn("right", "spring", 0.5 * index, 0.75)}
+        variants={fadeIn("right", "spring", 0.1 * index, 0.75)}
         className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card"
       >
-        <div className="bg-tertiary rounded-[20px] py-5 px-1 sm:px-12 min-h-[280px] flex justify-evenly items-center flex-col">
+        <div className="bg-tertiary rounded-[20px] py-5 px-1 sm:px-12 sm:min-h-[280px] min-h-[170px] flex justify-evenly items-center flex-col">
           <img src={icon} alt={title} className="w-16 h-16 object-contain" />
           <h3 className="text-white text-[16px] sm:text-[20px] font-bold text-center">
             {title}

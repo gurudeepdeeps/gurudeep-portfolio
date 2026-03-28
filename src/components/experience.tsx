@@ -62,22 +62,19 @@ export const Experience = () => {
     <SectionWrapper idName="work">
       <>
         {/* Title */}
-        <motion.div variants={textVariant()}>
+        <motion.div variants={textVariant(0.1)}>
           <p className={styles.sectionSubText}>What I have done so far</p>
           <h2 className={styles.sectionHeadText}>Work Experience.</h2>
         </motion.div>
 
         {/* Experience Card */}
-        <motion.div
-          variants={fadeIn("up", "tween", 0.1, 1)}
-          className="mt-20 flex flex-col"
-        >
+        <div className="mt-20 flex flex-col">
           <VerticalTimeline>
             {EXPERIENCES.map((experience, i) => (
               <ExperienceCard key={i} experience={experience} />
             ))}
           </VerticalTimeline>
-        </motion.div>
+        </div>
       </>
     </SectionWrapper>
   );
