@@ -250,8 +250,8 @@ const Dashboard = () => {
                          <div className="h-48 overflow-hidden relative">
                             <img src={p.image || "/placeholder.png"} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
-                               <button onClick={() => handleDeleteProject(p.$id)} className="p-2 bg-red-500/80 rounded-lg"><Trash2 size={18} /></button>
-                               <a href={p.live_site_link} target="_blank" className="p-2 bg-indigo-500/80 rounded-lg"><ExternalLink size={18} /></a>
+                               <button onClick={() => handleDeleteProject(p.$id)} className="p-2 bg-red-500/80 rounded-lg" title="Delete Project" aria-label="Delete Project"><Trash2 size={18} /></button>
+                               <a href={p.live_site_link} target="_blank" className="p-2 bg-indigo-500/80 rounded-lg" title="Open Live Site" aria-label="Open Live Site"><ExternalLink size={18} /></a>
                             </div>
                          </div>
                          <div className="p-6">
