@@ -1,11 +1,13 @@
 import { motion } from "framer-motion";
 import { useState, useRef, type FormEvent, type ChangeEvent } from "react";
 import { toast } from "sonner";
+import { ID } from "appwrite";
 
 import { EarthCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { styles } from "../styles";
 import { slideIn } from "../utils/motion";
+import { databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ENQUIRIES } from "../lib/appwrite";
 
 // Contact
 export const Contact = () => {
@@ -29,102 +31,72 @@ export const Contact = () => {
 
   // validate form on submit
   const validateForm = () => {
-    // form fields
     const { name, email, message } = form;
+    const errors: { [key: string]: boolean } = { name: true, email: true, message: true };
 
-    type Current = {
-      name: boolean;
-      email: boolean;
-      message: boolean;
-    };
-
-    // Error message
     const nameError = document.querySelector("#name-error")!;
     const emailError = document.querySelector("#email-error")!;
     const messageError = document.querySelector("#message-error")!;
-    const current: Current = { name: false, email: false, message: false };
 
-    // validate name
     if (name.trim().length < 3) {
       nameError.classList.remove("hidden");
-      current["name"] = false;
+      errors.name = false;
     } else {
       nameError.classList.add("hidden");
-      current["name"] = true;
     }
 
-    const email_regex =
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const email_regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    // valiate email
     if (!email.trim().toLowerCase().match(email_regex)) {
       emailError.classList.remove("hidden");
-      current["email"] = false;
+      errors.email = false;
     } else {
       emailError.classList.add("hidden");
-      current["email"] = true;
     }
 
-    // validate message
     if (message.trim().length < 5) {
       messageError.classList.remove("hidden");
-      current["message"] = false;
+      errors.message = false;
     } else {
       messageError.classList.add("hidden");
-      current["message"] = true;
     }
 
-    // True if all fields are validated
-    return Object.keys(current).every(
-      (k) => current[k as keyof typeof current],
-    );
+    return Object.values(errors).every(Boolean);
   };
 
   // handle form submit
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    // prevent default page reload
     e.preventDefault();
 
-    // validate form
     if (!validateForm()) return false;
 
-    // show loader
     setLoading(true);
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          access_key: "06a786dc-0bc6-48eb-945e-3a080a34c91f",
+      // Send to Appwrite instead of Web3Forms/EmailJS
+      await databases.createDocument(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_COLLECTION_ENQUIRIES,
+        ID.unique(),
+        {
           name: form.name,
           email: form.email.trim().toLowerCase(),
           phone: form.phone || "Not provided",
           message: form.message,
-          from_name: "Gurudeep Portfolio Contact Form",
-        }),
+          created_at: new Date().toISOString(),
+        }
+      );
+
+      toast.success("Message sent successfully! I'll get back to you soon.");
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
       });
-
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success("Thanks for contacting me.");
-        setForm({
-          name: "",
-          email: "",
-          phone: "",
-          message: "",
-        });
-      } else {
-        throw new Error(result.message || "Form submission failed");
-      }
-    } catch (error) {
-      // Error handle
+    } catch (error: any) {
       console.error("[CONTACT_ERROR]: ", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(error.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -137,17 +109,14 @@ export const Contact = () => {
           variants={slideIn("left", "tween", 0.2, 1)}
           className="flex-[0.75] bg-black-100 p-8 rounded-2xl"
         >
-          {/* Title */}
           <p className={styles.sectionSubText}>Get in touch</p>
           <h3 className={styles.sectionHeadText}>Contact.</h3>
 
-          {/* Form */}
           <form
             ref={formRef}
             onSubmit={handleSubmit}
             className="mt-12 flex flex-col gap-8"
           >
-            {/* Name */}
             <label htmlFor="name" className="flex flex-col">
               <span className="text-white font-medium mb-4">Your Name*</span>
               <input
@@ -157,19 +126,14 @@ export const Contact = () => {
                 value={form.name}
                 onChange={handleChange}
                 placeholder="John Doe"
-                title="What's your name?"
                 disabled={loading}
-                aria-disabled={loading}
-                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60"
+                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:opacity-50"
               />
-
-              {/* Invalid Name */}
               <span className="text-red-400 mt-2 hidden" id="name-error">
-                Invalid Name!
+                Name must be at least 3 characters.
               </span>
             </label>
 
-            {/* Email */}
             <label htmlFor="email" className="flex flex-col">
               <span className="text-white font-medium mb-4">Your Email*</span>
               <input
@@ -179,19 +143,14 @@ export const Contact = () => {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="johndoe@email.com"
-                title="What's your email?"
                 disabled={loading}
-                aria-disabled={loading}
-                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60"
+                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:opacity-50"
               />
-
-              {/* Invalid Email */}
               <span className="text-red-400 mt-2 hidden" id="email-error">
-                Invalid E-mail!
+                Please enter a valid email address.
               </span>
             </label>
 
-            {/* Phone */}
             <label htmlFor="phone" className="flex flex-col">
               <span className="text-white font-medium mb-4">Your Phone</span>
               <input
@@ -201,14 +160,11 @@ export const Contact = () => {
                 value={form.phone}
                 onChange={handleChange}
                 placeholder="+91-1234567890"
-                title="What's your phone number?"
                 disabled={loading}
-                aria-disabled={loading}
-                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60"
+                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:opacity-50"
               />
             </label>
 
-            {/* Message */}
             <label htmlFor="message" className="flex flex-col">
               <span className="text-white font-medium mb-4">Your Message*</span>
               <textarea
@@ -218,33 +174,24 @@ export const Contact = () => {
                 value={form.message}
                 onChange={handleChange}
                 placeholder="Hello there!"
-                title="What do you want to say?"
                 disabled={loading}
-                aria-disabled={loading}
-                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60 disabled:resize-none"
+                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:opacity-50 resize-none"
               />
-
-              {/* Invalid Message */}
               <span className="text-red-400 mt-2 hidden" id="message-error">
-                Invalid Message!
+                Message must be at least 5 characters.
               </span>
             </label>
 
-            {/* Submit */}
             <button
               type="submit"
-              title={loading ? "Sending..." : "Send"}
-              className="bg-tertiary py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl disabled:bg-tertiary/20 disabled:text-white/60"
               disabled={loading}
-              aria-disabled={loading}
+              className="bg-tertiary py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl disabled:opacity-50"
             >
-              {/* check loader state */}
               {loading ? "Sending..." : "Send"}
             </button>
           </form>
         </motion.div>
 
-        {/* Earth Model */}
         <motion.div
           variants={slideIn("right", "tween", 0.2, 1)}
           className="xl:flex-1 xl:h-auto md:h-[550px] h-[350px]"

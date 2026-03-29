@@ -13,6 +13,8 @@ import { Feedbacks } from "./feedbacks";
 import { Hero } from "./hero";
 import { Navbar } from "./navbar";
 import { Works } from "./works";
+import Login from "./Login";
+import Dashboard from "./Dashboard";
 
 export {
   About,
@@ -25,4 +27,6 @@ export {
   Navbar,
   StarsCanvas,
   Works,
+  Login,
+  Dashboard,
 };
