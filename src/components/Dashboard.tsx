@@ -153,9 +153,7 @@ const Dashboard = () => {
   const menuItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "projects", label: "Projects", icon: Briefcase },
-    { id: "experience", label: "Experience", icon: History },
     { id: "enquiries", label: "Enquiries", icon: MessageSquare },
-    { id: "settings", label: "Settings", icon: Settings },
   ];
 
   return (
@@ -277,18 +275,24 @@ const Dashboard = () => {
                      enquiries.map((e) => (
                        <div key={e.$id} className="p-6 bg-[#151030]/30 border border-white/5 rounded-3xl flex flex-col md:flex-row gap-6 md:items-center">
                           <div className="flex-1">
-                             <div className="flex items-center gap-3 mb-2">
+                              <div className="flex items-center gap-3 mb-2">
                                 <UserIcon size={16} className="text-indigo-400" />
                                 <span className="font-bold">{e.name}</span>
                                 <span className="text-xs text-white/20 ml-2">•</span>
                                 <span className="text-xs text-white/40">{e.email}</span>
-                             </div>
-                             <p className="text-white/80 text-sm bg-black/20 p-4 rounded-xl italic border border-white/5">"{e.message}"</p>
+                                {e.phone && (
+                                 <>
+                                  <span className="text-xs text-white/20 ml-2">•</span>
+                                  <span className="text-xs text-white/40">{e.phone}</span>
+                                 </>
+                                )}
+                              </div>
+                              <p className="text-white/80 text-sm bg-black/20 p-4 rounded-xl italic border border-white/5">"{e.message}"</p>
+                            </div>
+                            <div className="flex items-center gap-4 text-xs text-white/20 whitespace-nowrap">
+                              <Calendar size={14} /> {new Date(e.$createdAt).toLocaleDateString()}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-4 text-xs text-white/20 whitespace-nowrap">
-                             <Calendar size={14} /> {new Date(e.$createdAt).toLocaleDateString()}
-                          </div>
-                       </div>
                      ))
                    )}
                 </motion.div>
