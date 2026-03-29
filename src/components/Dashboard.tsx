@@ -1,3 +1,4 @@
+// ...existing code...
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -55,6 +56,7 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
+    document.title = "Admin | Gurudeep Portfolio";
     const checkAuth = async () => {
       console.log("[DASHBOARD_AUTH]: Checking session...");
       const user = await getCurrentUser();
