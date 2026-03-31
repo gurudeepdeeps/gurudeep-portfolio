@@ -1,3 +1,4 @@
+  // ...existing code...
 // ...existing code...
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +36,66 @@ import {
 import { toast } from "sonner";
 
 const Dashboard = () => {
+  // Enquiry Edit Modal State and Handlers
+  const [isEditEnquiryModalOpen, setIsEditEnquiryModalOpen] = useState(false);
+  const [editEnquiryId, setEditEnquiryId] = useState<string | null>(null);
+  const [editEnquiryForm, setEditEnquiryForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: ""
+  });
+
+  const openEditEnquiryModal = (enquiry: any) => {
+    setEditEnquiryId(enquiry.$id);
+    setEditEnquiryForm({
+      name: enquiry.name || "",
+      email: enquiry.email || "",
+      phone: enquiry.phone || "",
+      message: enquiry.message || ""
+    });
+    setIsEditEnquiryModalOpen(true);
+  };
+
+  const handleEditEnquiry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await databases.updateDocument(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_COLLECTION_ENQUIRIES,
+        editEnquiryId!,
+        {
+          name: editEnquiryForm.name,
+          email: editEnquiryForm.email,
+          phone: editEnquiryForm.phone,
+          message: editEnquiryForm.message
+        }
+      );
+      toast.success("Enquiry updated successfully!");
+      setIsEditEnquiryModalOpen(false);
+      setEditEnquiryId(null);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update enquiry");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteEnquiry = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this enquiry?")) return;
+    try {
+      await databases.deleteDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ENQUIRIES, id);
+      toast.success("Enquiry deleted");
+      setEnquiries((prev: any[]) => prev.filter(e => e.$id !== id));
+    } catch (error) {
+      toast.error("Failed to delete enquiry");
+    }
+  };
+
+  // Fetch projects and enquiries from Appwrite
+// Removed duplicate fetchData declaration
   const [activeTab, setActiveTab] = useState("overview");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userData, setUserData] = useState<any>(null);
@@ -42,6 +103,64 @@ const Dashboard = () => {
   const [enquiries, setEnquiries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editProjectId, setEditProjectId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    description: "",
+    tags: "",
+    live_site_link: "",
+    imageFile: null as File | null,
+    image: ""
+  });
+    const openEditModal = (project: any) => {
+      setEditProjectId(project.$id);
+      setEditForm({
+        name: project.name || "",
+        description: project.description || "",
+        tags: project.tags || "",
+        live_site_link: project.live_site_link || "",
+        imageFile: null,
+        image: project.image || ""
+      });
+      setIsEditModalOpen(true);
+    };
+
+    const handleEditProject = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+      try {
+        let imageUrl = editForm.image;
+        if (editForm.imageFile) {
+          const uploadRes = await storage.createFile(
+            APPWRITE_BUCKET_ID,
+            ID.unique(),
+            editForm.imageFile
+          );
+          imageUrl = storage.getFileView(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
+        }
+        await databases.updateDocument(
+          APPWRITE_DATABASE_ID,
+          APPWRITE_COLLECTION_PROJECTS,
+          editProjectId!,
+          {
+            name: editForm.name,
+            description: editForm.description,
+            tags: editForm.tags,
+            image: imageUrl,
+            live_site_link: editForm.live_site_link
+          }
+        );
+        toast.success("Project updated successfully!");
+        setIsEditModalOpen(false);
+        setEditProjectId(null);
+        fetchData();
+      } catch (error: any) {
+        toast.error(error.message || "Failed to update project");
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const navigate = useNavigate();
@@ -217,20 +336,20 @@ const Dashboard = () => {
 
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           {loading ? (
-             <div className="h-full flex items-center justify-center"><Loader2 className="animate-spin text-indigo-500" size={40} /></div>
+            <div className="h-full flex items-center justify-center"><Loader2 className="animate-spin text-indigo-500" size={40} /></div>
           ) : (
             <AnimatePresence mode="wait">
               {activeTab === "overview" && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                     <div className="p-8 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl">
-                        <p className="text-white/40 text-sm">Active Projects</p>
-                        <h4 className="text-4xl font-bold mt-2">{projects.length}</h4>
-                     </div>
-                     <div className="p-8 bg-purple-500/10 border border-purple-500/20 rounded-3xl">
-                        <p className="text-white/40 text-sm">New Enquiries</p>
-                        <h4 className="text-4xl font-bold mt-2">{enquiries.length}</h4>
-                     </div>
+                    <div className="p-8 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl">
+                      <p className="text-white/40 text-sm">Active Projects</p>
+                      <h4 className="text-4xl font-bold mt-2">{projects.length}</h4>
+                    </div>
+                    <div className="p-8 bg-purple-500/10 border border-purple-500/20 rounded-3xl">
+                      <p className="text-white/40 text-sm">New Enquiries</p>
+                      <h4 className="text-4xl font-bold mt-2">{enquiries.length}</h4>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -240,63 +359,117 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center bg-[#151030]/50 p-6 rounded-3xl border border-white/5">
                     <h3 className="text-lg font-bold">Manage Work</h3>
                     <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-lg shadow-indigo-600/20">
-                       <Plus size={18} /> Add Project
+                      <Plus size={18} /> Add Project
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                    {projects.map((p) => (
-                      <div key={p.$id} className="bg-[#151030]/30 border border-white/5 rounded-3xl overflow-hidden group hover:border-indigo-500/30 transition-all">
+                      {projects.map((p) => (
+                       <div key={p.$id} className="bg-[#151030]/30 border border-white/5 rounded-3xl overflow-hidden group hover:border-indigo-500/30 transition-all flex flex-col">
                          <div className="h-48 overflow-hidden relative">
-                            <img src={p.image || "/placeholder.png"} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
-                               <button onClick={() => handleDeleteProject(p.$id)} className="p-2 bg-red-500/80 rounded-lg" title="Delete Project" aria-label="Delete Project"><Trash2 size={18} /></button>
-                               <a href={p.live_site_link} target="_blank" className="p-2 bg-indigo-500/80 rounded-lg" title="Open Live Site" aria-label="Open Live Site"><ExternalLink size={18} /></a>
-                            </div>
+                           <img src={p.image || "/placeholder.png"} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
+                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
+                             <button onClick={() => handleDeleteProject(p.$id)} className="p-2 bg-red-500/80 rounded-lg" title="Delete Project" aria-label="Delete Project"><Trash2 size={18} /></button>
+                             <a href={p.live_site_link} target="_blank" className="p-2 bg-indigo-500/80 rounded-lg" title="Open Live Site" aria-label="Open Live Site"><ExternalLink size={18} /></a>
+                             <button onClick={() => openEditModal(p)} className="p-2 bg-yellow-500/80 rounded-lg" title="Edit Project" aria-label="Edit Project"><Settings size={18} /></button>
+                           </div>
                          </div>
-                         <div className="p-6">
-                            <h4 className="font-bold text-lg mb-2">{p.name}</h4>
-                            <p className="text-sm text-white/40 line-clamp-2 mb-4">{p.description}</p>
-                            <div className="flex flex-wrap gap-2">
-                               {p.tags?.split(',').map((tag: any, i: any) => (
-                                 <span key={i} className="text-[10px] bg-white/5 px-2 py-1 rounded-md uppercase font-bold tracking-wider text-white/60">#{tag.trim()}</span>
-                               ))}
-                            </div>
+                         <div className="p-6 flex-1 flex flex-col">
+                           <h4 className="font-bold text-lg mb-2">{p.name}</h4>
+                           <p className="text-sm text-white/40 line-clamp-2 mb-4">{p.description}</p>
+                           <div className="flex flex-wrap gap-2 mb-2">
+                             {p.tags?.split(',').map((tag: any, i: any) => (
+                              <span key={i} className="text-[10px] bg-white/5 px-2 py-1 rounded-md uppercase font-bold tracking-wider text-white/60">#{tag.trim()}</span>
+                             ))}
+                           </div>
                          </div>
-                      </div>
-                    ))}
+                       </div>
+                      ))}
+                      {/* Edit Project Modal */}
+                      {isEditModalOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setIsEditModalOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+                         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative bg-[#151030] border border-white/10 p-8 rounded-[40px] w-full max-w-xl shadow-2xl overflow-hidden">
+                           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-indigo-500" />
+                           <h3 className="text-2xl font-bold mb-8">Edit Project</h3>
+                           <form onSubmit={handleEditProject} className="space-y-4">
+                             <input type="text" placeholder="Project Name" required value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                             <textarea placeholder="Description" rows={3} required value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                             <input type="text" placeholder="Tags (comma separated: React, Tailwind)" value={editForm.tags} onChange={e => setEditForm({...editForm, tags: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                             <input type="url" placeholder="Live Site Link" value={editForm.live_site_link} onChange={e => setEditForm({...editForm, live_site_link: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                             <div className="flex items-center gap-4 p-4 border-2 border-dashed border-white/5 rounded-2xl">
+                               <div className="flex-1 text-sm text-white/40">{editForm.imageFile ? editForm.imageFile.name : (editForm.image ? "Current image set" : "Select cover image")}</div>
+                               <input type="file" onChange={e => setEditForm({...editForm, imageFile: e.target.files?.[0] || null})} className="hidden" id="edit-file-upload" />
+                               <label htmlFor="edit-file-upload" className="px-4 py-2 bg-white/5 rounded-lg cursor-pointer hover:bg-white/10">Browse</label>
+                             </div>
+                             <div className="flex gap-4 mt-8">
+                               <button type="button" onClick={() => setIsEditModalOpen(false)} className="flex-1 py-4 text-white/40 font-bold">Cancel</button>
+                               <button type="submit" disabled={isSubmitting} className="flex-1 py-4 bg-yellow-500 rounded-2xl font-bold shadow-lg shadow-yellow-500/20 disabled:opacity-50 flex items-center justify-center gap-2">
+                                 {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Save Changes"}
+                               </button>
+                             </div>
+                           </form>
+                         </motion.div>
+                        </div>
+                      )}
                   </div>
                 </motion.div>
               )}
 
               {activeTab === "enquiries" && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-                   {enquiries.length === 0 ? (
-                     <div className="text-center py-20 opacity-20"><Mail size={48} className="mx-auto mb-4" /><p>No messages yet</p></div>
-                   ) : (
-                     enquiries.map((e) => (
-                       <div key={e.$id} className="p-6 bg-[#151030]/30 border border-white/5 rounded-3xl flex flex-col md:flex-row gap-6 md:items-center">
+                  {enquiries.length === 0 ? (
+                    <div className="text-center text-white/40 py-12">No enquiries found.</div>
+                  ) : (
+                    <>
+                      {enquiries.map((e: any) => (
+                        <div key={e.$id} className="p-6 bg-[#151030]/30 border border-white/5 rounded-3xl flex flex-col md:flex-row gap-6 md:items-center">
                           <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <UserIcon size={16} className="text-indigo-400" />
-                                <span className="font-bold">{e.name}</span>
-                                <span className="text-xs text-white/20 ml-2">•</span>
-                                <span className="text-xs text-white/40">{e.email}</span>
-                                {e.phone && (
-                                 <>
+                            <div className="flex items-center gap-3 mb-2">
+                              <UserIcon size={16} className="text-indigo-400" />
+                              <span className="font-bold">{e.name}</span>
+                              <span className="text-xs text-white/20 ml-2">•</span>
+                              <span className="text-xs text-white/40">{e.email}</span>
+                              {e.phone && (
+                                <>
                                   <span className="text-xs text-white/20 ml-2">•</span>
                                   <span className="text-xs text-white/40">{e.phone}</span>
-                                 </>
-                                )}
-                              </div>
-                              <p className="text-white/80 text-sm bg-black/20 p-4 rounded-xl italic border border-white/5">"{e.message}"</p>
+                                </>
+                              )}
                             </div>
-                            <div className="flex items-center gap-4 text-xs text-white/20 whitespace-nowrap">
-                              <Calendar size={14} /> {new Date(e.$createdAt).toLocaleDateString()}
-                            </div>
+                            <p className="text-white/80 text-sm bg-black/20 p-4 rounded-xl italic border border-white/5">"{e.message}"</p>
                           </div>
-                     ))
-                   )}
+                          <div className="flex items-center gap-4 text-xs text-white/20 whitespace-nowrap">
+                            <Calendar size={14} /> {new Date(e.$createdAt).toLocaleDateString()}
+                            <button onClick={() => openEditEnquiryModal(e)} className="p-2 bg-yellow-500/80 rounded-lg ml-2" title="Edit Enquiry" aria-label="Edit Enquiry"><Settings size={16} /></button>
+                            <button onClick={() => handleDeleteEnquiry(e.$id)} className="p-2 bg-red-500/80 rounded-lg ml-2" title="Delete Enquiry" aria-label="Delete Enquiry"><Trash2 size={16} /></button>
+                          </div>
+                        </div>
+                      ))}
+                      {/* Edit Enquiry Modal */}
+                      {isEditEnquiryModalOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setIsEditEnquiryModalOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+                          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative bg-[#151030] border border-white/10 p-8 rounded-[40px] w-full max-w-xl shadow-2xl overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-indigo-500" />
+                            <h3 className="text-2xl font-bold mb-8">Edit Enquiry</h3>
+                            <form onSubmit={handleEditEnquiry} className="space-y-4">
+                              <input type="text" placeholder="Name" required value={editEnquiryForm.name} onChange={e => setEditEnquiryForm({...editEnquiryForm, name: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                              <input type="email" placeholder="Email" required value={editEnquiryForm.email} onChange={e => setEditEnquiryForm({...editEnquiryForm, email: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                              <input type="text" placeholder="Phone" value={editEnquiryForm.phone} onChange={e => setEditEnquiryForm({...editEnquiryForm, phone: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                              <textarea placeholder="Message" rows={3} required value={editEnquiryForm.message} onChange={e => setEditEnquiryForm({...editEnquiryForm, message: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                              <div className="flex gap-4 mt-8">
+                                <button type="button" onClick={() => setIsEditEnquiryModalOpen(false)} className="flex-1 py-4 text-white/40 font-bold">Cancel</button>
+                                <button type="submit" disabled={isSubmitting} className="flex-1 py-4 bg-yellow-500 rounded-2xl font-bold shadow-lg shadow-yellow-500/20 disabled:opacity-50 flex items-center justify-center gap-2">
+                                  {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : "Save Changes"}
+                                </button>
+                              </div>
+                            </form>
+                          </motion.div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
