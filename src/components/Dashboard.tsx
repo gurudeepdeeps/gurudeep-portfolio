@@ -114,7 +114,7 @@ const Dashboard = () => {
           ID.unique(),
           projectForm.imageFile
         );
-        imageUrl = storage.getFilePreview(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
+        imageUrl = storage.getFileView(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
       }
 
       await databases.createDocument(
