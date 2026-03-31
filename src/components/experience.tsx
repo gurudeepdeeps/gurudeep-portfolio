@@ -31,13 +31,13 @@ const ExperienceCard = ({ experience }: ExperienceCardProps) => (
         />
       </div>
     }
+    className="bg-[#1d1836] text-white"
   >
     {/* Title */}
     <div>
       <h3 className="text-white text-[24px] font-bold">{experience.title}</h3>
       <p
-        className="text-secondary text-[16px] font-semibold"
-        style={{ margin: 0 }}
+        className="text-secondary text-[16px] font-semibold m-0"
       >
         {experience.company_name}
       </p>

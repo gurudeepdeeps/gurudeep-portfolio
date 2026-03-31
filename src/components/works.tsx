@@ -38,8 +38,18 @@ const ProjectCard = ({
   image,
   live_site_link,
 }: ProjectCardProps) => {
-  // Parsing tags if it comes as a JSON string from Appwrite
-  const parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+  // Parsing tags if it comes as a JSON string from Appwrite, with error fallback
+  let parsedTags: ProjectTag[] = [];
+  if (typeof tags === 'string') {
+    try {
+      parsedTags = JSON.parse(tags);
+    } catch (e) {
+      // fallback: treat as comma-separated string
+      parsedTags = tags.split(',').map((t) => ({ name: t.trim(), color: 'text-white' }));
+    }
+  } else {
+    parsedTags = tags;
+  }
 
   return (
     <motion.div variants={fadeIn("up", "spring", index * 0.1, 0.75)}>
