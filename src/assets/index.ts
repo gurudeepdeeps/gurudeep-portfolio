@@ -36,10 +36,11 @@ import user1 from "./testimonials/user1.jpg";
 import user2 from "./testimonials/user2.jpg";
 import user3 from "./testimonials/user3.jpg";
 
+
 import github from "./socials/github.svg";
 import linkedin from "./socials/linkedin.svg";
-import twitter from "./socials/twitter.svg";
-import youtube from "./socials/youtube.svg";
+import call from "./socials/call.svg";
+import whatsapp from "./socials/whatsapp.svg";
 
 export {
   backend,
@@ -74,7 +75,7 @@ export {
   user2,
   user3,
   github,
-  youtube,
   linkedin,
-  twitter,
+  call,
+  whatsapp,
 };

@@ -29,10 +29,10 @@ import {
   user1,
   user2,
   user3,
-  youtube,
   linkedin,
-  twitter,
   github,
+  call,
+  whatsapp,
 } from "../assets";
 
 // Navbar Links
@@ -283,9 +283,9 @@ export const PROJECTS = [
 
 export const SOCIALS = [
   {
-    name: "YouTube",
-    icon: youtube,
-    link: "https://www.youtube.com/@DeepsPlayzYT",
+    name: "Call",
+    icon: call,
+    link: "tel:+919999999999", // Replace with actual phone number
   },
   {
     name: "Linkedin",
@@ -293,9 +293,9 @@ export const SOCIALS = [
     link: "https://www.linkedin.com/in/gurudeepv",
   },
   {
-    name: "Twitter",
-    icon: twitter,
-    link: "https://x.com/gurudeep_v",
+    name: "WhatsApp",
+    icon: whatsapp,
+    link: "https://wa.me/919999999999", // Replace with actual WhatsApp number
   },
   {
     name: "GitHub",
