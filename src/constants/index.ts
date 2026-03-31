@@ -223,63 +223,7 @@ export const TESTIMONIALS = [
   },
 ] as const;
 
-// Projects
-export const PROJECTS = [
-  {
-    name: "Xpensive Media",
-    description:
-      "Developed and maintained dynamic web applications using React.js for Xpensive Media, an agency specializing in digital solutions.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "SupaBase",
-        color: "green-text-gradient",
-      },
-    ],
-    image: "/project-images/xpensivemedia.png",
-    source_code_link: "https://github.com/gurudeepdeeps/xpensivemedia",
-    live_site_link: "https://xpensivemedia.vercel.app",
-  },
-  {
-    name: "Likhiith Visuals",
-    description:
-      "Developed and maintained dynamic web applications using HTML, CSS, and JavaScript for Likhiith Visuals, an E-Commerce website specializing in digital products.",
-    tags: [
-      {
-        name: "html",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "SupaBase",
-        color: "green-text-gradient",
-      },
-    ],
-    image: "/project-images/likhithvisuals.png",
-    source_code_link: "https://github.com/gurudeepdeeps/likhith-visuals",
-    live_site_link: "https://likhiith-visuals.netlify.app",
-  },
-  {
-    name: "Nexgen - SJBIT College",
-    description:
-      "Developed and maintained dynamic web applications using React.js for Nexgen - SJBIT College, a college website specializing in Events management and registration.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "SupaBase",
-        color: "green-text-gradient",
-      },
-    ],
-    image: "/project-images/nexgen.png",
-    source_code_link: "https://github.com/gurudeepdeeps/nexgen",
-    live_site_link: "https://nexgen-mca.vercel.app",
-  },
-] as const;
+
 
 export const SOCIALS = [
   {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Tilt } from "react-tilt";
 import { motion } from "framer-motion";
 
-import { PROJECTS } from "../constants";
+// ...existing code...
 import { SectionWrapper } from "../hoc";
 import { styles } from "../styles";
 import { cn } from "../utils/lib";
@@ -105,14 +105,10 @@ export const Works = () => {
           [Query.orderDesc("$createdAt")]
         );
         
-        if (response.documents.length > 0) {
-          setDynamicProjects(response.documents as any);
-        } else {
-          setDynamicProjects([...PROJECTS] as any);
-        }
+        setDynamicProjects(response.documents as any);
       } catch (error) {
-        console.warn("Appwrite error (using static fallback):", error);
-        setDynamicProjects([...PROJECTS] as any);
+        console.warn("Appwrite error:", error);
+        setDynamicProjects([]);
       } finally {
         setLoading(false);
       }
