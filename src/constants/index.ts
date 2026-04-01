@@ -136,50 +136,38 @@ export const TECHNOLOGIES = [
 // Experiences
 export const EXPERIENCES = [
   {
-    title: "Web Developer",
-    company_name: "Likhith Visuals - Portfolio Website",
+    title: "Likhith Visuals - Online Store",
     icon: likhithvisuals,
     iconBg: "#383E56",
-    date: "December 2025 - Present",
     points: [
-      "Built responsive websites using HTML, CSS, and JavaScript",
-      "Implemented SEO best practices for better search rankings",
+      "Built responsive websites & Implemented SEO best practices for better search rankings",
       'Visit Likhith Visuals: <a href="https://likhiith-visuals.netlify.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">likhiith-visuals.netlify.app</a>',
     ],
   },
   {
-    title: "React Developer",
-    company_name: "Nexgen - SJBIT College",
+    title: "Nexgen - SJBIT College",
     icon: nexgen,
     iconBg: "#E6DEDD",
-    date: "January 2026 - February 2026",
     points: [
       "Developed dynamic web applications using React.js and modern JavaScript",
-      "Collaborated with the team to deliver high-quality college web solutions",
       'Visit Nexgen: <a href="https://nexgen-mca.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">nexgen-mca.vercel.app</a>',
     ],
   },
   {
-    title: "Video Editing",
-    company_name: "Pixel Planet - Agency",
+    title: "Pixel Planet - Agency",
     icon: pixelplanet,
     iconBg: "#383E56",
-    date: "Jan 2022 - Jan 2023",
     points: [
       "Edited promotional videos and social media content for various clients",
-      "Applied color grading, transitions, and effects to enhance visual storytelling",
       "Optimized video outputs for different platforms and formats",
     ],
   },
   {
-    title: "React Developer",
-    company_name: "Xpensive Media - Agency",
+    title: "Xpensive Media - Agency",
     icon: xpensivemedia,
     iconBg: "#383E56",
-    date: "Jan 2022 - Jan 2023",
     points: [
       "Developed and maintained dynamic web applications using React.js",
-      "Built responsive user interfaces with component-based architecture",
       'Visit Xpensive Media: <a href="https://xpensivemedia.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">xpensivemedia.vercel.app</a>',
     ],
   },
