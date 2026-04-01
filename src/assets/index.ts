@@ -32,9 +32,7 @@ import nexgen from "./company/nexgen.png";
 import pixelplanet from "./company/pixelplanet.png";
 import xpensivemedia from "./company/xpensivemedia.png";
 
-import user1 from "./testimonials/user1.jpg";
-import user2 from "./testimonials/user2.jpg";
-import user3 from "./testimonials/user3.jpg";
+import defaultAvatar from "./testimonials/default-avatar.svg";
 
 
 import github from "./socials/github.svg";
@@ -71,9 +69,7 @@ export {
   nexgen,
   pixelplanet,
   xpensivemedia,
-  user1,
-  user2,
-  user3,
+  defaultAvatar,
   github,
   linkedin,
   call,

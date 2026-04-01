@@ -125,7 +125,7 @@ export const Contact = () => {
                 id="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="John Doe"
+                placeholder="Your Name"
                 disabled={loading}
                 className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:opacity-50"
               />
@@ -142,7 +142,7 @@ export const Contact = () => {
                 id="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="johndoe@email.com"
+                placeholder="example@email.com"
                 disabled={loading}
                 className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:opacity-50"
               />
@@ -159,7 +159,7 @@ export const Contact = () => {
                 id="phone"
                 value={form.phone}
                 onChange={handleChange}
-                placeholder="+91-1234567890"
+                placeholder="+91-XXXXXXXXXX"
                 disabled={loading}
                 className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:opacity-50"
               />

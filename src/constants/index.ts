@@ -26,9 +26,7 @@ import {
   pixelplanet,
   xpensivemedia,
   threejs,
-  user1,
-  user2,
-  user3,
+  defaultAvatar,
   linkedin,
   github,
   call,
@@ -199,27 +197,24 @@ export const EXPERIENCES = [
 export const TESTIMONIALS = [
   {
     testimonial:
-      "I thought it was impossible to make a website as beautiful as our product, but Rick proved me wrong.",
-    name: "Sara Lee",
-    designation: "CFO",
-    company: "Acme Co",
-    image: user1,
+      "Gurudeep delivered our website exactly as we imagined. The design is clean, fast, and works perfectly on mobile devices.",
+    name: "Likhith D A",
+    company: "Personal Portfolio",
+    image: defaultAvatar,
   },
   {
     testimonial:
-      "I've never met a web developer who truly cares about their clients' success like Rick does.",
-    name: "Chris Brown",
-    designation: "COO",
-    company: "DEF Corp",
-    image: user2,
+      "Working with Gurudeep was a great experience. He developed a clean and professional website for M S Properties that helped us present our real-estate listings more effectively to customers.",
+    name: "Yogesh T Gowda",
+    company: "M S Properties",
+    image: defaultAvatar,
   },
   {
     testimonial:
-      "After Rick optimized our website, our traffic increased by 50%. We can't thank them enough!",
-    name: "Lisa Wang",
-    designation: "CTO",
-    company: "456 Enterprises",
-    image: user3,
+      "Gurudeep helped us improve our e-commerce website with a clean design and smooth user experience. The website now loads faster and works perfectly across mobile and desktop devices.",
+    name: "Likhith",
+    company: "Buy it",
+    image: defaultAvatar,
   },
 ] as const;
 
@@ -229,7 +224,7 @@ export const SOCIALS = [
   {
     name: "Call",
     icon: call,
-    link: "tel:+919999999999", // Replace with actual phone number
+    link: "tel:+916363770057", // Replace with actual phone number
   },
   {
     name: "Linkedin",
@@ -239,7 +234,7 @@ export const SOCIALS = [
   {
     name: "WhatsApp",
     icon: whatsapp,
-    link: "https://wa.me/919999999999", // Replace with actual WhatsApp number
+    link: "https://wa.me/916363770057", // Replace with actual WhatsApp number
   },
   {
     name: "GitHub",

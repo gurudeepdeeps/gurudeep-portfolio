@@ -31,7 +31,6 @@ const ExperienceCard = ({ experience }: ExperienceCardProps) => (
         />
       </div>
     }
-    className="bg-[#1d1836] text-white"
   >
     {/* Title */}
     <div>
