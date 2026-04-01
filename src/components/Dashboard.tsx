@@ -180,6 +180,7 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDirty, setOrderDirty] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
+  const [canSyncProjectOrder, setCanSyncProjectOrder] = useState<boolean | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
@@ -350,26 +351,55 @@ const Dashboard = () => {
     console.info("[ADMIN_PROJECT_ORDER] Save started", { count: projects.length });
 
     try {
-      await Promise.all(
-        projects.map((project, index) =>
-          databases.updateDocument(
+      if (canSyncProjectOrder === false) {
+        persistProjectOrderLocally(projects);
+        setOrderDirty(false);
+        toast.success("Project order saved locally");
+        return;
+      }
+
+      for (let index = 0; index < projects.length; index += 1) {
+        const project = projects[index];
+        try {
+          await databases.updateDocument(
             APPWRITE_DATABASE_ID,
             APPWRITE_COLLECTION_PROJECTS,
             project.$id,
             { display_order: index + 1 }
-          )
-        )
-      );
+          );
+        } catch (error: any) {
+          const message = String(error?.message || "");
+          const missingAttribute =
+            message.includes("Unknown attribute") && message.includes("display_order");
+
+          if (missingAttribute) {
+            setCanSyncProjectOrder(false);
+            console.warn("[ADMIN_PROJECT_ORDER] display_order not found in schema, saving locally", {
+              projectId: project.$id,
+            });
+            throw new Error("DISPLAY_ORDER_ATTRIBUTE_MISSING");
+          }
+
+          throw error;
+        }
+      }
+
+      setCanSyncProjectOrder(true);
 
       persistProjectOrderLocally(projects);
       setOrderDirty(false);
       toast.success("Project order saved");
       console.info("[ADMIN_PROJECT_ORDER] Save success");
     } catch (error: any) {
-      console.error("[ADMIN_PROJECT_ORDER] Save failed", error);
       persistProjectOrderLocally(projects);
       setOrderDirty(false);
-      toast.error("Saved locally. Add numeric 'display_order' field in Appwrite projects collection to sync globally.");
+
+      if (String(error?.message || "") === "DISPLAY_ORDER_ATTRIBUTE_MISSING") {
+        toast.success("Order saved locally. Add numeric 'display_order' field in Appwrite projects collection to sync globally.");
+      } else {
+        console.error("[ADMIN_PROJECT_ORDER] Save failed", error);
+        toast.error("Could not sync order to cloud. Local order is still saved.");
+      }
     } finally {
       console.info("[ADMIN_PROJECT_ORDER] Save flow completed");
       setIsSavingOrder(false);
