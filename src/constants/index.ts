@@ -143,9 +143,6 @@ export const EXPERIENCES = [
     date: "December 2025 - Present",
     points: [
       "Built responsive websites using HTML, CSS, and JavaScript",
-      "Developed and maintained client websites and web applications",
-      "Created user-friendly interfaces with modern design principles",
-      "Optimized website performance and loading speeds",
       "Implemented SEO best practices for better search rankings",
       'Visit Likhith Visuals: <a href="https://likhiith-visuals.netlify.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">likhiith-visuals.netlify.app</a>',
     ],
@@ -158,8 +155,6 @@ export const EXPERIENCES = [
     date: "January 2026 - February 2026",
     points: [
       "Developed dynamic web applications using React.js and modern JavaScript",
-      "Built responsive user interfaces with component-based architecture",
-      "Integrated RESTful APIs and managed state using React hooks",
       "Collaborated with the team to deliver high-quality college web solutions",
       'Visit Nexgen: <a href="https://nexgen-mca.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">nexgen-mca.vercel.app</a>',
     ],
@@ -173,7 +168,6 @@ export const EXPERIENCES = [
     points: [
       "Edited promotional videos and social media content for various clients",
       "Applied color grading, transitions, and effects to enhance visual storytelling",
-      "Collaborated with creative team to deliver engaging multimedia content",
       "Optimized video outputs for different platforms and formats",
     ],
   },
@@ -186,8 +180,6 @@ export const EXPERIENCES = [
     points: [
       "Developed and maintained dynamic web applications using React.js",
       "Built responsive user interfaces with component-based architecture",
-      "Integrated RESTful APIs and managed state using React hooks",
-      "Collaborated with the team to deliver high-quality web solutions",
       'Visit Xpensive Media: <a href="https://xpensivemedia.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">xpensivemedia.vercel.app</a>',
     ],
   },
