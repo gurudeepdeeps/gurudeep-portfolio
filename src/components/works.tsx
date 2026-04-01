@@ -127,6 +127,7 @@ const sortProjectsByCustomOrder = (projects: ProjectData[]) => {
 
 type ProjectCardProps = ProjectData & {
   index: number;
+  disableTilt?: boolean;
 };
 
 // Project Card
@@ -137,6 +138,7 @@ const ProjectCard = ({
   tags,
   image,
   live_site_link,
+  disableTilt = false,
 }: ProjectCardProps) => {
   // Parsing tags if it comes as a JSON string from Appwrite, with error fallback
   let parsedTags: ProjectTag[] = [];
@@ -151,42 +153,52 @@ const ProjectCard = ({
     parsedTags = tags;
   }
 
+  const cardBody = (
+    <div
+      onClick={() => window.open(live_site_link, "_blank", "noreferrer")}
+      className="w-full h-full"
+    >
+      <div className="relative w-full h-[230px]">
+        <img
+          src={image}
+          alt={name}
+          className="w-full h-full object-cover rounded-2xl"
+        />
+      </div>
+
+      <div className="mt-5">
+        <h3 className="text-white font-bold text-[24px]">{name}</h3>
+        <p className="mt-2 text-secondary text-[14px] leading-relaxed">{description}</p>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {Array.isArray(parsedTags) && parsedTags.map((tag: any, tagIdx: number) => (
+          <p key={`Tag-${tagIdx}`} className={cn(tag.color, "text-[12px] font-medium")}>
+            #{tag.name}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <motion.div variants={fadeIn("up", "spring", index * 0.1, 0.75)}>
-      <Tilt
-        options={{
-          max: 45,
-          scale: 1,
-          speed: 450,
-        }}
-        className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full cursor-pointer"
-      >
-        <div
-          onClick={() => window.open(live_site_link, "_blank", "noreferrer")}
-          className="w-full h-full"
-        >
-          <div className="relative w-full h-[230px]">
-            <img
-              src={image}
-              alt={name}
-              className="w-full h-full object-cover rounded-2xl"
-            />
-          </div>
-
-          <div className="mt-5">
-            <h3 className="text-white font-bold text-[24px]">{name}</h3>
-            <p className="mt-2 text-secondary text-[14px] leading-relaxed">{description}</p>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {Array.isArray(parsedTags) && parsedTags.map((tag: any, tagIdx: number) => (
-              <p key={`Tag-${tagIdx}`} className={cn(tag.color, "text-[12px] font-medium")}>
-                #{tag.name}
-              </p>
-            ))}
-          </div>
+      {disableTilt ? (
+        <div className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full cursor-pointer">
+          {cardBody}
         </div>
-      </Tilt>
+      ) : (
+        <Tilt
+          options={{
+            max: 45,
+            scale: 1,
+            speed: 450,
+          }}
+          className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full cursor-pointer"
+        >
+          {cardBody}
+        </Tilt>
+      )}
     </motion.div>
   );
 };
@@ -196,6 +208,16 @@ export const Works = () => {
   const [dynamicProjects, setDynamicProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 639px)");
+    const setFromQuery = () => setIsMobileView(mediaQuery.matches);
+    setFromQuery();
+    mediaQuery.addEventListener("change", setFromQuery);
+
+    return () => mediaQuery.removeEventListener("change", setFromQuery);
+  }, []);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -207,11 +229,17 @@ export const Works = () => {
       });
 
       try {
-        const response = await databases.listDocuments(
+        const projectsRequest = databases.listDocuments(
           APPWRITE_DATABASE_ID,
           APPWRITE_COLLECTION_PROJECTS,
           [Query.orderDesc("$createdAt")]
         );
+
+        const timeoutRequest = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error("PROJECTS_FETCH_TIMEOUT")), 12000);
+        });
+
+        const response = await Promise.race([projectsRequest, timeoutRequest]);
 
         const projects = response.documents as unknown as ProjectData[];
         if (projects.length > 0) {
@@ -270,7 +298,7 @@ export const Works = () => {
 
         <div className="mt-20 flex flex-wrap gap-7">
           {dynamicProjects.map((project, i) => (
-            <ProjectCard key={project.$id || `project-${i}`} index={i} {...project} />
+            <ProjectCard key={project.$id || `project-${i}`} index={i} disableTilt={isMobileView} {...project} />
           ))}
           {loading && (
             <div className="w-full flex justify-center py-10">

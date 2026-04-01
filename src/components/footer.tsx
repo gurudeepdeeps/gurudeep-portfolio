@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 import { SOCIALS } from "../constants";
 import { styles } from "../styles";
 import { cn } from "../utils/lib";
@@ -14,20 +12,20 @@ const Footer = () => {
       )}
     >
       <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
-        <p className="text-white text-md font-bold flex">
+        <p className="text-white text-sm sm:text-md font-bold flex">
           &copy; Gurudeep V {new Date().getFullYear()}. All rights reserved.
         </p>
 
-        {/* Nav Links (Desktop) */}
-        <ul className="list-none hidden flex-row sm:flex gap-10">
+        {/* Social Links */}
+        <ul className="list-none flex flex-row gap-4 sm:gap-8">
           {SOCIALS.map((social) => (
             <li
               key={social.name}
               className="text-secondary font-poppins font-medium cursor-pointer text-[16px] opacity-80 hover:opacity-100 transition"
             >
-              <Link to={social.link} target="_blank" rel="noreferrer noopener">
-                <img src={social.icon} alt={social.name} className="h-6 w-6" />
-              </Link>
+              <a href={social.link} target="_blank" rel="noreferrer noopener" aria-label={social.name}>
+                <img src={social.icon} alt={social.name} className="h-5 w-5 sm:h-6 sm:w-6" />
+              </a>
             </li>
           ))}
         </ul>
