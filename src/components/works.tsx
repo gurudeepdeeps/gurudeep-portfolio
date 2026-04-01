@@ -211,6 +211,15 @@ export const Works = () => {
   const [isMobileView, setIsMobileView] = useState(false);
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (typeof window.matchMedia !== "function") {
+      setIsMobileView(window.innerWidth <= 639);
+      return;
+    }
+
     const mediaQuery = window.matchMedia("(max-width: 639px)");
     const setFromQuery = () => setIsMobileView(mediaQuery.matches);
     setFromQuery();
