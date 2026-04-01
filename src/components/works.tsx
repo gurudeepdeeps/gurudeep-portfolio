@@ -10,6 +10,42 @@ import { fadeIn, textVariant } from "../utils/motion";
 import { databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS } from "../lib/appwrite";
 import { Query } from "appwrite";
 
+const FALLBACK_PROJECTS: ProjectData[] = [
+  {
+    name: "Likhith Visuals",
+    description: "Portfolio website focused on cinematic visual presentation and responsive layouts.",
+    tags: [
+      { name: "React", color: "text-blue-400" },
+      { name: "Tailwind", color: "text-cyan-400" },
+    ],
+    image: "/project-images/likhithvisuals.png",
+    source_code_link: "",
+    live_site_link: "https://likhiith-visuals.netlify.app",
+  },
+  {
+    name: "Nexgen MCA",
+    description: "College web platform with dynamic pages, clear information architecture, and modern UI.",
+    tags: [
+      { name: "React", color: "text-blue-400" },
+      { name: "TypeScript", color: "text-sky-400" },
+    ],
+    image: "/project-images/nexgen.png",
+    source_code_link: "",
+    live_site_link: "https://nexgen-mca.vercel.app",
+  },
+  {
+    name: "Xpensive Media",
+    description: "Agency showcase website built for fast browsing and clear service storytelling.",
+    tags: [
+      { name: "React", color: "text-blue-400" },
+      { name: "Vite", color: "text-purple-400" },
+    ],
+    image: "/project-images/xpensivemedia.png",
+    source_code_link: "",
+    live_site_link: "https://xpensivemedia.vercel.app",
+  },
+];
+
 interface ProjectTag {
   name: string;
   color: string;
@@ -95,6 +131,7 @@ const ProjectCard = ({
 export const Works = () => {
   const [dynamicProjects, setDynamicProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -104,11 +141,19 @@ export const Works = () => {
           APPWRITE_COLLECTION_PROJECTS,
           [Query.orderDesc("$createdAt")]
         );
-        
-        setDynamicProjects(response.documents as any);
+
+        const projects = response.documents as unknown as ProjectData[];
+        if (projects.length > 0) {
+          setDynamicProjects(projects);
+          setUsingFallback(false);
+        } else {
+          setDynamicProjects(FALLBACK_PROJECTS);
+          setUsingFallback(true);
+        }
       } catch (error) {
         console.warn("Appwrite error:", error);
-        setDynamicProjects([]);
+        setDynamicProjects(FALLBACK_PROJECTS);
+        setUsingFallback(true);
       } finally {
         setLoading(false);
       }
@@ -137,6 +182,15 @@ export const Works = () => {
             and manage projects effectively.
           </motion.p>
         </div>
+
+        {usingFallback && (
+          <motion.p
+            variants={fadeIn(undefined, undefined, 0.15, 1)}
+            className="mt-4 inline-flex rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-[13px] text-amber-200"
+          >
+            Live project feed is temporarily unavailable, so local project cards are being shown.
+          </motion.p>
+        )}
 
         <div className="mt-20 flex flex-wrap gap-7">
           {dynamicProjects.map((project, i) => (
