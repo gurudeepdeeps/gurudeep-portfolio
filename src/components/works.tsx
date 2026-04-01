@@ -214,9 +214,14 @@ export const Works = () => {
     const mediaQuery = window.matchMedia("(max-width: 639px)");
     const setFromQuery = () => setIsMobileView(mediaQuery.matches);
     setFromQuery();
-    mediaQuery.addEventListener("change", setFromQuery);
 
-    return () => mediaQuery.removeEventListener("change", setFromQuery);
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", setFromQuery);
+      return () => mediaQuery.removeEventListener("change", setFromQuery);
+    }
+
+    mediaQuery.addListener(setFromQuery);
+    return () => mediaQuery.removeListener(setFromQuery);
   }, []);
 
   useEffect(() => {
