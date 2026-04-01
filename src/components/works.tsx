@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
-import { Tilt } from "react-tilt";
-import { motion } from "framer-motion";
 
 // ...existing code...
-import { SectionWrapper } from "../hoc";
 import { styles } from "../styles";
 import { cn } from "../utils/lib";
-import { fadeIn, textVariant } from "../utils/motion";
 import { databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS } from "../lib/appwrite";
 import { Query } from "appwrite";
 
@@ -127,7 +123,6 @@ const sortProjectsByCustomOrder = (projects: ProjectData[]) => {
 
 type ProjectCardProps = ProjectData & {
   index: number;
-  disableTilt?: boolean;
 };
 
 // Project Card
@@ -138,7 +133,6 @@ const ProjectCard = ({
   tags,
   image,
   live_site_link,
-  disableTilt = false,
 }: ProjectCardProps) => {
   // Parsing tags if it comes as a JSON string from Appwrite, with error fallback
   let parsedTags: ProjectTag[] = [];
@@ -153,53 +147,44 @@ const ProjectCard = ({
     parsedTags = tags;
   }
 
-  const cardBody = (
-    <div
-      onClick={() => window.open(live_site_link, "_blank", "noreferrer")}
-      className="w-full h-full"
-    >
-      <div className="relative w-full h-[230px]">
+  return (
+    <div className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full border border-white/10">
+      <div className="relative w-full h-[230px] rounded-2xl overflow-hidden bg-black/30">
         <img
           src={image}
           alt={name}
-          className="w-full h-full object-cover rounded-2xl"
+          className="w-full h-full object-cover"
+          loading="lazy"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.display = "none";
+          }}
         />
       </div>
 
       <div className="mt-5">
-        <h3 className="text-white font-bold text-[24px]">{name}</h3>
-        <p className="mt-2 text-secondary text-[14px] leading-relaxed">{description}</p>
+        <h3 className="text-white font-bold text-[24px]">{name || `Project ${index + 1}`}</h3>
+        <p className="mt-2 text-secondary text-[14px] leading-relaxed">{description || "Project details coming soon."}</p>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {Array.isArray(parsedTags) && parsedTags.map((tag: any, tagIdx: number) => (
-          <p key={`Tag-${tagIdx}`} className={cn(tag.color, "text-[12px] font-medium")}>
+          <p key={`Tag-${tagIdx}`} className={cn(tag.color || "text-white", "text-[12px] font-medium")}>
             #{tag.name}
           </p>
         ))}
       </div>
-    </div>
-  );
 
-  return (
-    <motion.div variants={fadeIn("up", "spring", index * 0.1, 0.75)}>
-      {disableTilt ? (
-        <div className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full cursor-pointer">
-          {cardBody}
-        </div>
-      ) : (
-        <Tilt
-          options={{
-            max: 45,
-            scale: 1,
-            speed: 450,
-          }}
-          className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full cursor-pointer"
+      {live_site_link && (
+        <a
+          href={live_site_link}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="mt-5 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
         >
-          {cardBody}
-        </Tilt>
+          Open Project
+        </a>
       )}
-    </motion.div>
+    </div>
   );
 };
 
@@ -208,31 +193,6 @@ export const Works = () => {
   const [dynamicProjects, setDynamicProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
-  const [isMobileView, setIsMobileView] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    if (typeof window.matchMedia !== "function") {
-      setIsMobileView(window.innerWidth <= 639);
-      return;
-    }
-
-    const mediaQuery = window.matchMedia("(max-width: 639px)");
-    const setFromQuery = () => setIsMobileView(mediaQuery.matches);
-    setFromQuery();
-
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", setFromQuery);
-      return () => mediaQuery.removeEventListener("change", setFromQuery);
-    }
-
-    mediaQuery.addListener(setFromQuery);
-    return () => mediaQuery.removeListener(setFromQuery);
-  }, []);
-
   useEffect(() => {
     const fetchProjects = async () => {
       console.info("[PROJECTS_FETCH] Starting fetch from Appwrite", {
@@ -281,46 +241,42 @@ export const Works = () => {
   }, []);
 
   return (
-    <SectionWrapper idName="projects">
-      <>
-        <motion.div variants={textVariant()}>
-          <p className={styles.sectionSubText}>My Work</p>
-          <h2 className={styles.sectionHeadText}>Projects.</h2>
-        </motion.div>
+    <section className={cn(styles.padding, "max-w-7xl mx-auto relative z-0")}>
+      <span className="hash-span" id="projects">
+        &nbsp;
+      </span>
 
-        <div className="w-full flex">
-          <motion.p
-            variants={fadeIn(undefined, undefined, 0.1, 1)}
-            className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
-          >
-            Following projects showcases my skills and experience through
-            real-world examples of my work. Each project is briefly described
-            with links to live demos. It reflects my
-            ability to solve complex problems, work with different technologies,
-            and manage projects effectively.
-          </motion.p>
-        </div>
+      <div>
+        <p className={styles.sectionSubText}>My Work</p>
+        <h2 className={styles.sectionHeadText}>Projects.</h2>
+      </div>
 
-        {usingFallback && (
-          <motion.p
-            variants={fadeIn(undefined, undefined, 0.15, 1)}
-            className="mt-4 inline-flex rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-[13px] text-amber-200"
-          >
-            Live project feed is temporarily unavailable, so local project cards are being shown.
-          </motion.p>
+      <div className="w-full flex">
+        <p className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]">
+          Following projects showcases my skills and experience through
+          real-world examples of my work. Each project is briefly described
+          with links to live demos. It reflects my
+          ability to solve complex problems, work with different technologies,
+          and manage projects effectively.
+        </p>
+      </div>
+
+      {usingFallback && (
+        <p className="mt-4 inline-flex rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-[13px] text-amber-200">
+          Live project feed is temporarily unavailable, so local project cards are being shown.
+        </p>
+      )}
+
+      <div className="mt-20 flex flex-wrap gap-7">
+        {dynamicProjects.map((project, i) => (
+          <ProjectCard key={project.$id || `project-${i}`} index={i} {...project} />
+        ))}
+        {loading && (
+          <div className="w-full flex justify-center py-10">
+             <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          </div>
         )}
-
-        <div className="mt-20 flex flex-wrap gap-7">
-          {dynamicProjects.map((project, i) => (
-            <ProjectCard key={project.$id || `project-${i}`} index={i} disableTilt={isMobileView} {...project} />
-          ))}
-          {loading && (
-            <div className="w-full flex justify-center py-10">
-               <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-        </div>
-      </>
-    </SectionWrapper>
+      </div>
+    </section>
   );
 };
