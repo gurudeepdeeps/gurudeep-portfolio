@@ -30,31 +30,11 @@ import {
   Loader2,
   Trash2,
   ExternalLink,
-  ArrowUp,
-  ArrowDown,
   Mail,
   Calendar,
   User as UserIcon
 } from "lucide-react";
 import { toast } from "sonner";
-
-const PROJECT_ORDER_STORAGE_KEY = "portfolio_project_order";
-const PROJECT_ORDER_CLOUD_SYNC_KEY = "portfolio_project_order_cloud_sync";
-
-const parseLocalOrderMap = () => {
-  if (typeof window === "undefined") {
-    return {} as Record<string, number>;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(PROJECT_ORDER_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return typeof parsed === "object" && parsed ? parsed : {};
-  } catch {
-    return {};
-  }
-};
 
 const getNumericOrder = (value: unknown) => {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -71,31 +51,8 @@ const getNumericOrder = (value: unknown) => {
   return null;
 };
 
-const getInitialCloudSyncCapability = () => {
-  if (typeof window === "undefined") {
-    return null as boolean | null;
-  }
-
-  const value = window.localStorage.getItem(PROJECT_ORDER_CLOUD_SYNC_KEY);
-  if (value === "enabled") return true;
-  if (value === "disabled") return false;
-  return null;
-};
-
 const sortProjectsByCustomOrder = (projectList: any[]) => {
-  const localOrderMap = parseLocalOrderMap();
-
   return [...projectList].sort((a, b) => {
-    const aLocal = getNumericOrder(localOrderMap[a.$id]);
-    const bLocal = getNumericOrder(localOrderMap[b.$id]);
-
-    if (aLocal !== null && bLocal !== null && aLocal !== bLocal) {
-      return aLocal - bLocal;
-    }
-
-    if (aLocal !== null && bLocal === null) return -1;
-    if (aLocal === null && bLocal !== null) return 1;
-
     const aDb = getNumericOrder(a.display_order);
     const bDb = getNumericOrder(b.display_order);
 
@@ -192,7 +149,6 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDirty, setOrderDirty] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
-  const [canSyncProjectOrder, setCanSyncProjectOrder] = useState<boolean | null>(getInitialCloudSyncCapability);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
@@ -313,14 +269,6 @@ const Dashboard = () => {
       });
       setProjects(sortProjectsByCustomOrder(projRes.documents));
 
-      const hasCloudOrderFieldOnAnyDoc = projRes.documents.some((doc: any) => typeof doc.display_order !== "undefined");
-      if (hasCloudOrderFieldOnAnyDoc) {
-        setCanSyncProjectOrder(true);
-        if (typeof window !== "undefined") {
-          window.localStorage.setItem(PROJECT_ORDER_CLOUD_SYNC_KEY, "enabled");
-        }
-      }
-
       setEnquiries(enqRes.documents);
       setOrderDirty(false);
     } catch (error) {
@@ -329,42 +277,6 @@ const Dashboard = () => {
       console.info("[ADMIN_DATA] Fetch flow completed");
       setLoading(false);
     }
-  };
-
-  const persistProjectOrderLocally = (orderedProjects: any[]) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const orderMap: Record<string, number> = {};
-    orderedProjects.forEach((project, index) => {
-      if (project.$id) {
-        orderMap[project.$id] = index + 1;
-      }
-    });
-
-    window.localStorage.setItem(PROJECT_ORDER_STORAGE_KEY, JSON.stringify(orderMap));
-  };
-
-  const moveProject = (projectId: string, direction: "up" | "down") => {
-    setProjects((prev) => {
-      const currentIndex = prev.findIndex((p) => p.$id === projectId);
-      if (currentIndex === -1) {
-        return prev;
-      }
-
-      const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-      if (targetIndex < 0 || targetIndex >= prev.length) {
-        return prev;
-      }
-
-      const next = [...prev];
-      [next[currentIndex], next[targetIndex]] = [next[targetIndex], next[currentIndex]];
-      persistProjectOrderLocally(next);
-      return next;
-    });
-
-    setOrderDirty(true);
   };
 
   const setProjectOrderByNumber = (projectId: string, nextPosition: number) => {
@@ -384,7 +296,6 @@ const Dashboard = () => {
       const reordered = [...prev];
       const [moved] = reordered.splice(currentIndex, 1);
       reordered.splice(targetIndex, 0, moved);
-      persistProjectOrderLocally(reordered);
       return reordered;
     });
 
@@ -396,61 +307,22 @@ const Dashboard = () => {
     console.info("[ADMIN_PROJECT_ORDER] Save started", { count: projects.length });
 
     try {
-      if (canSyncProjectOrder === false) {
-        persistProjectOrderLocally(projects);
-        setOrderDirty(false);
-        toast.success("Project order saved locally");
-        return;
-      }
-
       for (let index = 0; index < projects.length; index += 1) {
         const project = projects[index];
-        try {
-          await databases.updateDocument(
-            APPWRITE_DATABASE_ID,
-            APPWRITE_COLLECTION_PROJECTS,
-            project.$id,
-            { display_order: index + 1 }
-          );
-        } catch (error: any) {
-          const message = String(error?.message || "");
-          const missingAttribute =
-            message.includes("Unknown attribute") && message.includes("display_order");
-
-          if (missingAttribute) {
-            setCanSyncProjectOrder(false);
-            if (typeof window !== "undefined") {
-              window.localStorage.setItem(PROJECT_ORDER_CLOUD_SYNC_KEY, "disabled");
-            }
-            console.warn("[ADMIN_PROJECT_ORDER] display_order not found in schema, saving locally", {
-              projectId: project.$id,
-            });
-            throw new Error("DISPLAY_ORDER_ATTRIBUTE_MISSING");
-          }
-
-          throw error;
-        }
+        await databases.updateDocument(
+          APPWRITE_DATABASE_ID,
+          APPWRITE_COLLECTION_PROJECTS,
+          project.$id,
+          { display_order: index + 1 }
+        );
       }
 
-      setCanSyncProjectOrder(true);
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(PROJECT_ORDER_CLOUD_SYNC_KEY, "enabled");
-      }
-
-      persistProjectOrderLocally(projects);
       setOrderDirty(false);
-      toast.success("Project order saved");
+      toast.success("Project order saved in cloud");
       console.info("[ADMIN_PROJECT_ORDER] Save success");
     } catch (error: any) {
-      persistProjectOrderLocally(projects);
-      setOrderDirty(false);
-
-      if (String(error?.message || "") === "DISPLAY_ORDER_ATTRIBUTE_MISSING") {
-        toast.success("Order saved locally. Add numeric 'display_order' field in Appwrite projects collection to sync globally.");
-      } else {
-        console.error("[ADMIN_PROJECT_ORDER] Save failed", error);
-        toast.error("Could not sync order to cloud. Local order is still saved.");
-      }
+      console.error("[ADMIN_PROJECT_ORDER] Save failed", error);
+      toast.error("Could not save order in cloud. Make sure 'display_order' exists and update permission is enabled.");
     } finally {
       console.info("[ADMIN_PROJECT_ORDER] Save flow completed");
       setIsSavingOrder(false);
@@ -480,6 +352,7 @@ const Dashboard = () => {
 
     try {
       let imageUrl = "";
+      const nextDisplayOrder = projects.length + 1;
       
       // Upload Image if selected
       if (projectForm.imageFile) {
@@ -502,7 +375,8 @@ const Dashboard = () => {
           description: projectForm.description,
           tags: projectForm.tags,
           image: imageUrl,
-          live_site_link: projectForm.live_site_link
+          live_site_link: projectForm.live_site_link,
+          display_order: nextDisplayOrder
         }
       );
 
@@ -531,8 +405,27 @@ const Dashboard = () => {
     try {
       await databases.deleteDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS, id);
       console.info("[ADMIN_PROJECT_DELETE] Delete success", { projectId: id });
-      toast.success("Project deleted");
-      setProjects(projects.filter(p => p.$id !== id));
+
+      const remainingProjects = projects.filter((p) => p.$id !== id);
+      setProjects(remainingProjects);
+
+      try {
+        for (let index = 0; index < remainingProjects.length; index += 1) {
+          const project = remainingProjects[index];
+          await databases.updateDocument(
+            APPWRITE_DATABASE_ID,
+            APPWRITE_COLLECTION_PROJECTS,
+            project.$id,
+            { display_order: index + 1 }
+          );
+        }
+        console.info("[ADMIN_PROJECT_DELETE] Reindex success", { count: remainingProjects.length });
+      } catch (error: any) {
+        console.error("[ADMIN_PROJECT_DELETE] Reindex failed", error);
+      }
+
+      setOrderDirty(false);
+      toast.success("Project deleted and order reindexed");
     } catch (error) {
       console.error("[ADMIN_PROJECT_DELETE] Delete failed", error);
       toast.error("Deletion failed");
@@ -644,14 +537,8 @@ const Dashboard = () => {
                   </div>
 
                   <p className="text-xs text-white/50 px-1">
-                    Set exact order numbers for each project, or use arrows. Click Save Order to sync.
+                    Set exact order numbers for each project and click Save Order to sync.
                   </p>
-
-                  {canSyncProjectOrder === false && (
-                    <p className="text-xs text-amber-300/90 px-1">
-                      Cloud sync is currently unavailable for order. Local ordering still works.
-                    </p>
-                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
                       {projects.map((p, index) => (
@@ -681,26 +568,7 @@ const Dashboard = () => {
                                  ))}
                                </select>
                              </div>
-                             <div className="flex items-center gap-2">
-                               <button
-                                 onClick={() => moveProject(p.$id, "up")}
-                                 disabled={index === 0}
-                                 className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 disabled:opacity-30"
-                                 title="Move Up"
-                                 aria-label="Move Up"
-                               >
-                                 <ArrowUp size={14} />
-                               </button>
-                               <button
-                                 onClick={() => moveProject(p.$id, "down")}
-                                 disabled={index === projects.length - 1}
-                                 className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 disabled:opacity-30"
-                                 title="Move Down"
-                                 aria-label="Move Down"
-                               >
-                                 <ArrowDown size={14} />
-                               </button>
-                             </div>
+                             <span className="text-[10px] uppercase tracking-wider text-white/40">Cloud order</span>
                            </div>
                            <h4 className="font-bold text-lg mb-2">{p.name}</h4>
                            <p className="text-sm text-white/40 line-clamp-2 mb-4">{p.description}</p>

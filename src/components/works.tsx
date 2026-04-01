@@ -59,8 +59,6 @@ interface ProjectData {
   display_order?: number | string;
 }
 
-const PROJECT_ORDER_STORAGE_KEY = "portfolio_project_order";
-
 const getNumericOrder = (value: unknown) => {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -76,35 +74,8 @@ const getNumericOrder = (value: unknown) => {
   return null;
 };
 
-const parseLocalOrderMap = () => {
-  if (typeof window === "undefined") {
-    return {} as Record<string, number>;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(PROJECT_ORDER_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return typeof parsed === "object" && parsed ? parsed : {};
-  } catch {
-    return {};
-  }
-};
-
 const sortProjectsByCustomOrder = (projects: ProjectData[]) => {
-  const localOrderMap = parseLocalOrderMap();
-
   return [...projects].sort((a, b) => {
-    const aLocal = getNumericOrder(a.$id ? localOrderMap[a.$id] : null);
-    const bLocal = getNumericOrder(b.$id ? localOrderMap[b.$id] : null);
-
-    if (aLocal !== null && bLocal !== null && aLocal !== bLocal) {
-      return aLocal - bLocal;
-    }
-
-    if (aLocal !== null && bLocal === null) return -1;
-    if (aLocal === null && bLocal !== null) return 1;
-
     const aDb = getNumericOrder(a.display_order);
     const bDb = getNumericOrder(b.display_order);
 
