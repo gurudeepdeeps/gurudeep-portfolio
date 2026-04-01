@@ -367,6 +367,30 @@ const Dashboard = () => {
     setOrderDirty(true);
   };
 
+  const setProjectOrderByNumber = (projectId: string, nextPosition: number) => {
+    setProjects((prev) => {
+      const currentIndex = prev.findIndex((p) => p.$id === projectId);
+      if (currentIndex === -1) {
+        return prev;
+      }
+
+      const boundedTarget = Math.max(1, Math.min(nextPosition, prev.length));
+      const targetIndex = boundedTarget - 1;
+
+      if (targetIndex === currentIndex) {
+        return prev;
+      }
+
+      const reordered = [...prev];
+      const [moved] = reordered.splice(currentIndex, 1);
+      reordered.splice(targetIndex, 0, moved);
+      persistProjectOrderLocally(reordered);
+      return reordered;
+    });
+
+    setOrderDirty(true);
+  };
+
   const saveProjectOrder = async () => {
     setIsSavingOrder(true);
     console.info("[ADMIN_PROJECT_ORDER] Save started", { count: projects.length });
@@ -620,8 +644,14 @@ const Dashboard = () => {
                   </div>
 
                   <p className="text-xs text-white/50 px-1">
-                    Use arrow buttons on each card to set custom order. Click Save Order to apply it.
+                    Set exact order numbers for each project, or use arrows. Click Save Order to sync.
                   </p>
+
+                  {canSyncProjectOrder === false && (
+                    <p className="text-xs text-amber-300/90 px-1">
+                      Cloud sync is currently unavailable for order. Local ordering still works.
+                    </p>
+                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
                       {projects.map((p, index) => (
@@ -636,7 +666,21 @@ const Dashboard = () => {
                          </div>
                          <div className="p-6 flex-1 flex flex-col">
                            <div className="mb-3 flex items-center justify-between">
-                             <span className="text-[10px] uppercase tracking-wider text-white/40">Position #{index + 1}</span>
+                             <div className="flex items-center gap-2">
+                               <span className="text-[10px] uppercase tracking-wider text-white/40">Order</span>
+                               <select
+                                 value={index + 1}
+                                 onChange={(e) => setProjectOrderByNumber(p.$id, Number(e.target.value))}
+                                 className="rounded-md border border-white/10 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
+                                 aria-label={`Set order for ${p.name}`}
+                               >
+                                 {Array.from({ length: projects.length }, (_, i) => i + 1).map((position) => (
+                                   <option key={`${p.$id}-position-${position}`} value={position}>
+                                     #{position}
+                                   </option>
+                                 ))}
+                               </select>
+                             </div>
                              <div className="flex items-center gap-2">
                                <button
                                  onClick={() => moveProject(p.$id, "up")}
