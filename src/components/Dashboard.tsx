@@ -47,6 +47,7 @@ const Dashboard = () => {
   });
 
   const openEditEnquiryModal = (enquiry: any) => {
+    console.info("[ADMIN_ENQUIRY_EDIT] Open modal", { enquiryId: enquiry.$id });
     setEditEnquiryId(enquiry.$id);
     setEditEnquiryForm({
       name: enquiry.name || "",
@@ -60,6 +61,7 @@ const Dashboard = () => {
   const handleEditEnquiry = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    console.info("[ADMIN_ENQUIRY_EDIT] Update started", { enquiryId: editEnquiryId });
     try {
       await databases.updateDocument(
         APPWRITE_DATABASE_ID,
@@ -72,24 +74,34 @@ const Dashboard = () => {
           message: editEnquiryForm.message
         }
       );
+      console.info("[ADMIN_ENQUIRY_EDIT] Update success", { enquiryId: editEnquiryId });
       toast.success("Enquiry updated successfully!");
       setIsEditEnquiryModalOpen(false);
       setEditEnquiryId(null);
       fetchData();
     } catch (error: any) {
+      console.error("[ADMIN_ENQUIRY_EDIT] Update failed", error);
       toast.error(error.message || "Failed to update enquiry");
     } finally {
+      console.info("[ADMIN_ENQUIRY_EDIT] Update flow completed", { enquiryId: editEnquiryId });
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteEnquiry = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this enquiry?")) return;
+    if (!window.confirm("Are you sure you want to delete this enquiry?")) {
+      console.warn("[ADMIN_ENQUIRY_DELETE] Cancelled by user", { enquiryId: id });
+      return;
+    }
+
+    console.info("[ADMIN_ENQUIRY_DELETE] Delete started", { enquiryId: id });
     try {
       await databases.deleteDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ENQUIRIES, id);
+      console.info("[ADMIN_ENQUIRY_DELETE] Delete success", { enquiryId: id });
       toast.success("Enquiry deleted");
       setEnquiries((prev: any[]) => prev.filter(e => e.$id !== id));
     } catch (error) {
+      console.error("[ADMIN_ENQUIRY_DELETE] Delete failed", error);
       toast.error("Failed to delete enquiry");
     }
   };
@@ -114,6 +126,7 @@ const Dashboard = () => {
     image: ""
   });
     const openEditModal = (project: any) => {
+      console.info("[ADMIN_PROJECT_EDIT] Open modal", { projectId: project.$id });
       setEditProjectId(project.$id);
       setEditForm({
         name: project.name || "",
@@ -129,15 +142,18 @@ const Dashboard = () => {
     const handleEditProject = async (e: React.FormEvent) => {
       e.preventDefault();
       setIsSubmitting(true);
+      console.info("[ADMIN_PROJECT_EDIT] Update started", { projectId: editProjectId });
       try {
         let imageUrl = editForm.image;
         if (editForm.imageFile) {
+          console.info("[ADMIN_PROJECT_EDIT] Uploading new image", { projectId: editProjectId });
           const uploadRes = await storage.createFile(
             APPWRITE_BUCKET_ID,
             ID.unique(),
             editForm.imageFile
           );
           imageUrl = storage.getFileView(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
+          console.info("[ADMIN_PROJECT_EDIT] Image upload success", { fileId: uploadRes.$id, projectId: editProjectId });
         }
         await databases.updateDocument(
           APPWRITE_DATABASE_ID,
@@ -151,13 +167,16 @@ const Dashboard = () => {
             live_site_link: editForm.live_site_link
           }
         );
+        console.info("[ADMIN_PROJECT_EDIT] Update success", { projectId: editProjectId });
         toast.success("Project updated successfully!");
         setIsEditModalOpen(false);
         setEditProjectId(null);
         fetchData();
       } catch (error: any) {
+        console.error("[ADMIN_PROJECT_EDIT] Update failed", error);
         toast.error(error.message || "Failed to update project");
       } finally {
+        console.info("[ADMIN_PROJECT_EDIT] Update flow completed", { projectId: editProjectId });
         setIsSubmitting(false);
       }
     };
@@ -192,29 +211,40 @@ const Dashboard = () => {
   }, [navigate]);
 
   const fetchData = async () => {
-    console.log("[DASHBOARD_DATA]: Fetching database records...");
+    console.info("[ADMIN_DATA] Fetch started", {
+      databaseId: APPWRITE_DATABASE_ID,
+      projectsCollectionId: APPWRITE_COLLECTION_PROJECTS,
+      enquiriesCollectionId: APPWRITE_COLLECTION_ENQUIRIES,
+    });
     setLoading(true);
     try {
       const [projRes, enqRes] = await Promise.all([
         databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS, [Query.orderDesc("$createdAt")]),
         databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ENQUIRIES, [Query.orderDesc("$createdAt")])
       ]);
-      console.log("[DASHBOARD_DATA]: Successfully fetched", projRes.documents.length, "projects and", enqRes.documents.length, "enquiries");
+      console.info("[ADMIN_DATA] Fetch success", {
+        projectsCount: projRes.documents.length,
+        enquiriesCount: enqRes.documents.length,
+      });
       setProjects(projRes.documents);
       setEnquiries(enqRes.documents);
     } catch (error) {
-      console.error("[DASHBOARD_DATA_ERROR]:", error);
+      console.error("[ADMIN_DATA] Fetch failed", error);
     } finally {
+      console.info("[ADMIN_DATA] Fetch flow completed");
       setLoading(false);
     }
   };
 
   const handleLogout = async () => {
+    console.info("[ADMIN_AUTH] Logout started");
     try {
       await logout();
+      console.info("[ADMIN_AUTH] Logout success");
       toast.info("Logged out successfully");
       navigate("/login");
     } catch (error) {
+      console.error("[ADMIN_AUTH] Logout failed", error);
       toast.error("Logout failed");
     }
   };
@@ -222,21 +252,27 @@ const Dashboard = () => {
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    console.info("[ADMIN_PROJECT_CREATE] Create started", {
+      name: projectForm.name,
+      hasImage: Boolean(projectForm.imageFile),
+    });
 
     try {
       let imageUrl = "";
       
       // Upload Image if selected
       if (projectForm.imageFile) {
+        console.info("[ADMIN_PROJECT_CREATE] Uploading image");
         const uploadRes = await storage.createFile(
           APPWRITE_BUCKET_ID,
           ID.unique(),
           projectForm.imageFile
         );
         imageUrl = storage.getFileView(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
+        console.info("[ADMIN_PROJECT_CREATE] Image upload success", { fileId: uploadRes.$id });
       }
 
-      await databases.createDocument(
+      const createdProject = await databases.createDocument(
         APPWRITE_DATABASE_ID,
         APPWRITE_COLLECTION_PROJECTS,
         ID.unique(),
@@ -249,24 +285,35 @@ const Dashboard = () => {
         }
       );
 
+      console.info("[ADMIN_PROJECT_CREATE] Create success", { projectId: createdProject.$id });
+
       toast.success("Project created successfully!");
       setIsModalOpen(false);
       setProjectForm({ name: "", description: "", tags: "", live_site_link: "", imageFile: null });
       fetchData();
     } catch (error: any) {
+      console.error("[ADMIN_PROJECT_CREATE] Create failed", error);
       toast.error(error.message || "Failed to create project");
     } finally {
+      console.info("[ADMIN_PROJECT_CREATE] Create flow completed");
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteProject = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this project?")) return;
+    if (!window.confirm("Are you sure you want to delete this project?")) {
+      console.warn("[ADMIN_PROJECT_DELETE] Cancelled by user", { projectId: id });
+      return;
+    }
+
+    console.info("[ADMIN_PROJECT_DELETE] Delete started", { projectId: id });
     try {
       await databases.deleteDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS, id);
+      console.info("[ADMIN_PROJECT_DELETE] Delete success", { projectId: id });
       toast.success("Project deleted");
       setProjects(projects.filter(p => p.$id !== id));
     } catch (error) {
+      console.error("[ADMIN_PROJECT_DELETE] Delete failed", error);
       toast.error("Deletion failed");
     }
   };

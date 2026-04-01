@@ -135,6 +135,13 @@ export const Works = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
+      console.info("[PROJECTS_FETCH] Starting fetch from Appwrite", {
+        endpoint: import.meta.env.VITE_APPWRITE_ENDPOINT,
+        projectId: import.meta.env.VITE_APPWRITE_PROJECT_ID,
+        databaseId: APPWRITE_DATABASE_ID,
+        collectionId: APPWRITE_COLLECTION_PROJECTS,
+      });
+
       try {
         const response = await databases.listDocuments(
           APPWRITE_DATABASE_ID,
@@ -144,17 +151,22 @@ export const Works = () => {
 
         const projects = response.documents as unknown as ProjectData[];
         if (projects.length > 0) {
+          console.info("[PROJECTS_FETCH] Appwrite fetch success", {
+            count: projects.length,
+          });
           setDynamicProjects(projects);
           setUsingFallback(false);
         } else {
+          console.warn("[PROJECTS_FETCH] Appwrite returned no projects, using fallback");
           setDynamicProjects(FALLBACK_PROJECTS);
           setUsingFallback(true);
         }
       } catch (error) {
-        console.warn("Appwrite error:", error);
+        console.error("[PROJECTS_FETCH] Appwrite fetch failed, using fallback", error);
         setDynamicProjects(FALLBACK_PROJECTS);
         setUsingFallback(true);
       } finally {
+        console.info("[PROJECTS_FETCH] Fetch flow completed");
         setLoading(false);
       }
     };
