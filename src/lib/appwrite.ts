@@ -45,8 +45,36 @@ export const hasAppwriteSessionCookie = () => {
     const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || "";
     const expectedPrefix = projectId ? `a_session_${projectId}` : "a_session_";
 
-    return document.cookie
+    const hasCookieSession = document.cookie
         .split(";")
         .map((cookie) => cookie.trim())
         .some((cookie) => cookie.startsWith(expectedPrefix) || cookie.startsWith("a_session_"));
+
+    if (hasCookieSession) {
+        return true;
+    }
+
+    // Appwrite may fallback to localStorage session management when cookies are restricted.
+    try {
+        if (typeof localStorage === "undefined") {
+            return false;
+        }
+
+        for (let i = 0; i < localStorage.length; i += 1) {
+            const key = localStorage.key(i);
+            if (!key) continue;
+
+            if (
+                key.includes(expectedPrefix) ||
+                key.includes("a_session_") ||
+                key.includes("cookieFallback")
+            ) {
+                return true;
+            }
+        }
+    } catch {
+        return false;
+    }
+
+    return false;
 };

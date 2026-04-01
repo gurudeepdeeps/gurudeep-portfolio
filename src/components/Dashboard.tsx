@@ -200,7 +200,7 @@ const Dashboard = () => {
       console.log("[DASHBOARD_AUTH]: Checking session...");
 
       if (!hasAppwriteSessionCookie()) {
-        console.warn("[DASHBOARD_AUTH]: No session cookie, redirecting to login");
+        console.warn("[DASHBOARD_AUTH]: No session state, redirecting to login");
         navigate("/login");
         return;
       }

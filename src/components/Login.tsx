@@ -14,7 +14,7 @@ const Login = () => {
   useEffect(() => {
     const checkAuth = async () => {
       if (!hasAppwriteSessionCookie()) {
-        console.info("[AUTH_LOGIN] No session cookie found, skipping account check");
+        console.info("[AUTH_LOGIN] No session state found, skipping account check");
         return;
       }
 
