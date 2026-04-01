@@ -53,13 +53,77 @@ interface ProjectTag {
 
 interface ProjectData {
   $id?: string;
+  $createdAt?: string;
   name: string;
   description: string;
   tags: ProjectTag[] | string; // Appwrite might return a JSON string
   image: string;
   source_code_link: string;
   live_site_link: string;
+  display_order?: number | string;
 }
+
+const PROJECT_ORDER_STORAGE_KEY = "portfolio_project_order";
+
+const getNumericOrder = (value: unknown) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
+};
+
+const parseLocalOrderMap = () => {
+  if (typeof window === "undefined") {
+    return {} as Record<string, number>;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(PROJECT_ORDER_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return typeof parsed === "object" && parsed ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const sortProjectsByCustomOrder = (projects: ProjectData[]) => {
+  const localOrderMap = parseLocalOrderMap();
+
+  return [...projects].sort((a, b) => {
+    const aLocal = getNumericOrder(a.$id ? localOrderMap[a.$id] : null);
+    const bLocal = getNumericOrder(b.$id ? localOrderMap[b.$id] : null);
+
+    if (aLocal !== null && bLocal !== null && aLocal !== bLocal) {
+      return aLocal - bLocal;
+    }
+
+    if (aLocal !== null && bLocal === null) return -1;
+    if (aLocal === null && bLocal !== null) return 1;
+
+    const aDb = getNumericOrder(a.display_order);
+    const bDb = getNumericOrder(b.display_order);
+
+    if (aDb !== null && bDb !== null && aDb !== bDb) {
+      return aDb - bDb;
+    }
+
+    if (aDb !== null && bDb === null) return -1;
+    if (aDb === null && bDb !== null) return 1;
+
+    const aCreated = a.$createdAt ? new Date(a.$createdAt).getTime() : 0;
+    const bCreated = b.$createdAt ? new Date(b.$createdAt).getTime() : 0;
+    return bCreated - aCreated;
+  });
+};
 
 type ProjectCardProps = ProjectData & {
   index: number;
@@ -154,7 +218,7 @@ export const Works = () => {
           console.info("[PROJECTS_FETCH] Appwrite fetch success", {
             count: projects.length,
           });
-          setDynamicProjects(projects);
+          setDynamicProjects(sortProjectsByCustomOrder(projects));
           setUsingFallback(false);
         } else {
           console.warn("[PROJECTS_FETCH] Appwrite returned no projects, using fallback");

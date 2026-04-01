@@ -30,11 +30,73 @@ import {
   Loader2,
   Trash2,
   ExternalLink,
+  ArrowUp,
+  ArrowDown,
   Mail,
   Calendar,
   User as UserIcon
 } from "lucide-react";
 import { toast } from "sonner";
+
+const PROJECT_ORDER_STORAGE_KEY = "portfolio_project_order";
+
+const parseLocalOrderMap = () => {
+  if (typeof window === "undefined") {
+    return {} as Record<string, number>;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(PROJECT_ORDER_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return typeof parsed === "object" && parsed ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const getNumericOrder = (value: unknown) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
+};
+
+const sortProjectsByCustomOrder = (projectList: any[]) => {
+  const localOrderMap = parseLocalOrderMap();
+
+  return [...projectList].sort((a, b) => {
+    const aLocal = getNumericOrder(localOrderMap[a.$id]);
+    const bLocal = getNumericOrder(localOrderMap[b.$id]);
+
+    if (aLocal !== null && bLocal !== null && aLocal !== bLocal) {
+      return aLocal - bLocal;
+    }
+
+    if (aLocal !== null && bLocal === null) return -1;
+    if (aLocal === null && bLocal !== null) return 1;
+
+    const aDb = getNumericOrder(a.display_order);
+    const bDb = getNumericOrder(b.display_order);
+
+    if (aDb !== null && bDb !== null && aDb !== bDb) {
+      return aDb - bDb;
+    }
+
+    if (aDb !== null && bDb === null) return -1;
+    if (aDb === null && bDb !== null) return 1;
+
+    return new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime();
+  });
+};
 
 const Dashboard = () => {
   // Enquiry Edit Modal State and Handlers
@@ -116,6 +178,8 @@ const Dashboard = () => {
   const [enquiries, setEnquiries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [orderDirty, setOrderDirty] = useState(false);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
@@ -234,13 +298,81 @@ const Dashboard = () => {
         projectsCount: projRes.documents.length,
         enquiriesCount: enqRes.documents.length,
       });
-      setProjects(projRes.documents);
+      setProjects(sortProjectsByCustomOrder(projRes.documents));
       setEnquiries(enqRes.documents);
+      setOrderDirty(false);
     } catch (error) {
       console.error("[ADMIN_DATA] Fetch failed", error);
     } finally {
       console.info("[ADMIN_DATA] Fetch flow completed");
       setLoading(false);
+    }
+  };
+
+  const persistProjectOrderLocally = (orderedProjects: any[]) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const orderMap: Record<string, number> = {};
+    orderedProjects.forEach((project, index) => {
+      if (project.$id) {
+        orderMap[project.$id] = index + 1;
+      }
+    });
+
+    window.localStorage.setItem(PROJECT_ORDER_STORAGE_KEY, JSON.stringify(orderMap));
+  };
+
+  const moveProject = (projectId: string, direction: "up" | "down") => {
+    setProjects((prev) => {
+      const currentIndex = prev.findIndex((p) => p.$id === projectId);
+      if (currentIndex === -1) {
+        return prev;
+      }
+
+      const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+      if (targetIndex < 0 || targetIndex >= prev.length) {
+        return prev;
+      }
+
+      const next = [...prev];
+      [next[currentIndex], next[targetIndex]] = [next[targetIndex], next[currentIndex]];
+      persistProjectOrderLocally(next);
+      return next;
+    });
+
+    setOrderDirty(true);
+  };
+
+  const saveProjectOrder = async () => {
+    setIsSavingOrder(true);
+    console.info("[ADMIN_PROJECT_ORDER] Save started", { count: projects.length });
+
+    try {
+      await Promise.all(
+        projects.map((project, index) =>
+          databases.updateDocument(
+            APPWRITE_DATABASE_ID,
+            APPWRITE_COLLECTION_PROJECTS,
+            project.$id,
+            { display_order: index + 1 }
+          )
+        )
+      );
+
+      persistProjectOrderLocally(projects);
+      setOrderDirty(false);
+      toast.success("Project order saved");
+      console.info("[ADMIN_PROJECT_ORDER] Save success");
+    } catch (error: any) {
+      console.error("[ADMIN_PROJECT_ORDER] Save failed", error);
+      persistProjectOrderLocally(projects);
+      setOrderDirty(false);
+      toast.error("Saved locally. Add numeric 'display_order' field in Appwrite projects collection to sync globally.");
+    } finally {
+      console.info("[ADMIN_PROJECT_ORDER] Save flow completed");
+      setIsSavingOrder(false);
     }
   };
 
@@ -413,13 +545,29 @@ const Dashboard = () => {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                   <div className="flex justify-between items-center bg-[#151030]/50 p-6 rounded-3xl border border-white/5">
                     <h3 className="text-lg font-bold">Manage Work</h3>
-                    <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-lg shadow-indigo-600/20">
-                      <Plus size={18} /> Add Project
-                    </button>
+                    <div className="flex items-center gap-3">
+                      {orderDirty && (
+                        <button
+                          onClick={saveProjectOrder}
+                          disabled={isSavingOrder}
+                          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-60"
+                        >
+                          {isSavingOrder ? <Loader2 size={18} className="animate-spin" /> : null}
+                          Save Order
+                        </button>
+                      )}
+                      <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-lg shadow-indigo-600/20">
+                        <Plus size={18} /> Add Project
+                      </button>
+                    </div>
                   </div>
 
+                  <p className="text-xs text-white/50 px-1">
+                    Use arrow buttons on each card to set custom order. Click Save Order to apply it.
+                  </p>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                      {projects.map((p) => (
+                      {projects.map((p, index) => (
                        <div key={p.$id} className="bg-[#151030]/30 border border-white/5 rounded-3xl overflow-hidden group hover:border-indigo-500/30 transition-all flex flex-col">
                          <div className="h-48 overflow-hidden relative">
                            <img src={p.image || "/placeholder.png"} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
@@ -430,6 +578,29 @@ const Dashboard = () => {
                            </div>
                          </div>
                          <div className="p-6 flex-1 flex flex-col">
+                           <div className="mb-3 flex items-center justify-between">
+                             <span className="text-[10px] uppercase tracking-wider text-white/40">Position #{index + 1}</span>
+                             <div className="flex items-center gap-2">
+                               <button
+                                 onClick={() => moveProject(p.$id, "up")}
+                                 disabled={index === 0}
+                                 className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 disabled:opacity-30"
+                                 title="Move Up"
+                                 aria-label="Move Up"
+                               >
+                                 <ArrowUp size={14} />
+                               </button>
+                               <button
+                                 onClick={() => moveProject(p.$id, "down")}
+                                 disabled={index === projects.length - 1}
+                                 className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 disabled:opacity-30"
+                                 title="Move Down"
+                                 aria-label="Move Down"
+                               >
+                                 <ArrowDown size={14} />
+                               </button>
+                             </div>
+                           </div>
                            <h4 className="font-bold text-lg mb-2">{p.name}</h4>
                            <p className="text-sm text-white/40 line-clamp-2 mb-4">{p.description}</p>
                            <div className="flex flex-wrap gap-2 mb-2">
