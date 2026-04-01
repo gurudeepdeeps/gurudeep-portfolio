@@ -39,6 +39,7 @@ import {
 import { toast } from "sonner";
 
 const PROJECT_ORDER_STORAGE_KEY = "portfolio_project_order";
+const PROJECT_ORDER_CLOUD_SYNC_KEY = "portfolio_project_order_cloud_sync";
 
 const parseLocalOrderMap = () => {
   if (typeof window === "undefined") {
@@ -67,6 +68,17 @@ const getNumericOrder = (value: unknown) => {
     }
   }
 
+  return null;
+};
+
+const getInitialCloudSyncCapability = () => {
+  if (typeof window === "undefined") {
+    return null as boolean | null;
+  }
+
+  const value = window.localStorage.getItem(PROJECT_ORDER_CLOUD_SYNC_KEY);
+  if (value === "enabled") return true;
+  if (value === "disabled") return false;
   return null;
 };
 
@@ -180,7 +192,7 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderDirty, setOrderDirty] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
-  const [canSyncProjectOrder, setCanSyncProjectOrder] = useState<boolean | null>(null);
+  const [canSyncProjectOrder, setCanSyncProjectOrder] = useState<boolean | null>(getInitialCloudSyncCapability);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
@@ -300,6 +312,15 @@ const Dashboard = () => {
         enquiriesCount: enqRes.documents.length,
       });
       setProjects(sortProjectsByCustomOrder(projRes.documents));
+
+      const hasCloudOrderFieldOnAnyDoc = projRes.documents.some((doc: any) => typeof doc.display_order !== "undefined");
+      if (hasCloudOrderFieldOnAnyDoc) {
+        setCanSyncProjectOrder(true);
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(PROJECT_ORDER_CLOUD_SYNC_KEY, "enabled");
+        }
+      }
+
       setEnquiries(enqRes.documents);
       setOrderDirty(false);
     } catch (error) {
@@ -374,6 +395,9 @@ const Dashboard = () => {
 
           if (missingAttribute) {
             setCanSyncProjectOrder(false);
+            if (typeof window !== "undefined") {
+              window.localStorage.setItem(PROJECT_ORDER_CLOUD_SYNC_KEY, "disabled");
+            }
             console.warn("[ADMIN_PROJECT_ORDER] display_order not found in schema, saving locally", {
               projectId: project.$id,
             });
@@ -385,6 +409,9 @@ const Dashboard = () => {
       }
 
       setCanSyncProjectOrder(true);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(PROJECT_ORDER_CLOUD_SYNC_KEY, "enabled");
+      }
 
       persistProjectOrderLocally(projects);
       setOrderDirty(false);
