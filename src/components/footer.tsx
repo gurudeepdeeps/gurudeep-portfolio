@@ -12,7 +12,7 @@ const Footer = () => {
       )}
     >
       <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
-        <p className="text-white text-sm sm:text-md font-bold flex">
+        <p className="text-white text-xs sm:text-sm font-bold flex">
           &copy; Gurudeep V {new Date().getFullYear()}. All rights reserved.
         </p>
 
@@ -24,7 +24,7 @@ const Footer = () => {
               className="text-secondary font-poppins font-medium cursor-pointer text-[16px] opacity-80 hover:opacity-100 transition"
             >
               <a href={social.link} target="_blank" rel="noreferrer noopener" aria-label={social.name}>
-                <img src={social.icon} alt={social.name} className="h-5 w-5 sm:h-6 sm:w-6" />
+                <img src={social.icon} alt={social.name} className="h-7 w-7 sm:h-6 sm:w-6" />
               </a>
             </li>
           ))}
