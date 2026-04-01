@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { login, getCurrentUser } from "../lib/appwrite";
+import { login, getCurrentUser, hasAppwriteSessionCookie } from "../lib/appwrite";
 import { motion } from "framer-motion";
 import { LogIn, User, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,6 +13,11 @@ const Login = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      if (!hasAppwriteSessionCookie()) {
+        console.info("[AUTH_LOGIN] No session cookie found, skipping account check");
+        return;
+      }
+
       const user = await getCurrentUser();
       if (user) {
         navigate("/admin");

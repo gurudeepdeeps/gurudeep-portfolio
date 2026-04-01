@@ -36,3 +36,17 @@ export const getCurrentUser = async () => {
         return null; // Not logged in
     }
 };
+
+export const hasAppwriteSessionCookie = () => {
+    if (typeof document === "undefined") {
+        return false;
+    }
+
+    const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || "";
+    const expectedPrefix = projectId ? `a_session_${projectId}` : "a_session_";
+
+    return document.cookie
+        .split(";")
+        .map((cookie) => cookie.trim())
+        .some((cookie) => cookie.startsWith(expectedPrefix) || cookie.startsWith("a_session_"));
+};

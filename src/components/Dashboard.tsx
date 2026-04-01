@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { 
   logout, 
   getCurrentUser, 
+  hasAppwriteSessionCookie,
   databases, 
   storage,
   APPWRITE_DATABASE_ID, 
@@ -197,6 +198,13 @@ const Dashboard = () => {
     document.title = "Admin | Gurudeep Portfolio";
     const checkAuth = async () => {
       console.log("[DASHBOARD_AUTH]: Checking session...");
+
+      if (!hasAppwriteSessionCookie()) {
+        console.warn("[DASHBOARD_AUTH]: No session cookie, redirecting to login");
+        navigate("/login");
+        return;
+      }
+
       const user = await getCurrentUser();
       if (!user) {
         console.warn("[DASHBOARD_AUTH]: No active session, redirecting to login");
