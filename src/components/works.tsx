@@ -175,14 +175,16 @@ const ProjectCard = ({
       </div>
 
       {live_site_link && (
-        <a
-          href={live_site_link}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="mt-5 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
-        >
-          Open Project
-        </a>
+        <div className="mt-5 flex justify-end">
+          <a
+            href={live_site_link}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+          >
+            Live Site
+          </a>
+        </div>
       )}
     </div>
   );
