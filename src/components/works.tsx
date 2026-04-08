@@ -8,17 +8,6 @@ import { Query } from "appwrite";
 
 const FALLBACK_PROJECTS: ProjectData[] = [
   {
-    name: "Likhith Visuals",
-    description: "Portfolio website focused on cinematic visual presentation and responsive layouts.",
-    tags: [
-      { name: "React", color: "text-blue-400" },
-      { name: "Tailwind", color: "text-cyan-400" },
-    ],
-    image: "/project-images/likhithvisuals.png",
-    source_code_link: "",
-    live_site_link: "https://likhiith-visuals.netlify.app",
-  },
-  {
     name: "Nexgen MCA",
     description: "College web platform with dynamic pages, clear information architecture, and modern UI.",
     tags: [

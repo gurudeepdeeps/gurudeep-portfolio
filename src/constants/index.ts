@@ -21,14 +21,13 @@ import {
   premierepro,
   mediaencoder,
   capcut,
-  likhithvisuals,
+  thewed24,
   nexgen,
   pixelplanet,
   xpensivemedia,
   threejs,
   defaultAvatar,
   linkedin,
-  github,
   call,
   whatsapp,
 } from "../assets";
@@ -41,13 +40,13 @@ export const NAV_LINKS = [
     link: null,
   },
   {
-    id: "work",
-    title: "Work",
+    id: "projects",
+    title: "Projects",
     link: null,
   },
   {
-    id: "projects",
-    title: "Projects",
+    id: "work",
+    title: "Work",
     link: null,
   },
   {
@@ -136,12 +135,12 @@ export const TECHNOLOGIES = [
 // Experiences
 export const EXPERIENCES = [
   {
-    title: "Likhith Visuals - Online Store",
-    icon: likhithvisuals,
+    title: "The Wed 24 - Photographer",
+    icon: thewed24,
     iconBg: "#383E56",
     points: [
-      "Built responsive websites & Implemented SEO best practices for better search rankings",
-      'Visit Likhith Visuals: <a href="https://likhiith-visuals.netlify.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">likhiith-visuals.netlify.app</a>',
+      "Developed a Full Stact Website for a Photographer showcasing their Album & Films.",
+      'Visit The Wed 24: <a href="https://thewed24.com" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline;">thewed24.com</a>',
     ],
   },
   {
@@ -192,8 +191,8 @@ export const TESTIMONIALS = [
   {
     testimonial:
       "Gurudeep helped us improve our e-commerce website with a clean design and smooth user experience. The website now loads faster and works perfectly across mobile and desktop devices.",
-    name: "Likhith",
-    company: "Buy it",
+    name: "Kiran A N",
+    company: "The Wed 24",
     image: defaultAvatar,
   },
 ] as const;
@@ -215,10 +214,5 @@ export const SOCIALS = [
     name: "WhatsApp",
     icon: whatsapp,
     link: "https://wa.me/916363770057", // Replace with actual WhatsApp number
-  },
-  {
-    name: "GitHub",
-    icon: github,
-    link: "https://github.com/gurudeepdeeps",
   },
 ] as const;

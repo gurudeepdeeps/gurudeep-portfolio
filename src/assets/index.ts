@@ -27,7 +27,7 @@ import premierepro from "./tech/premierepro.png";
 import mediaencoder from "./tech/mediaencoder.png";
 import capcut from "./tech/capcut.png";
 
-import likhithvisuals from "./company/likhithvisuals.png";
+import thewed24 from "./company/thewed24.png";
 import nexgen from "./company/nexgen.png";
 import pixelplanet from "./company/pixelplanet.png";
 import xpensivemedia from "./company/xpensivemedia.png";
@@ -35,7 +35,6 @@ import xpensivemedia from "./company/xpensivemedia.png";
 import defaultAvatar from "./testimonials/default-avatar.svg";
 
 
-import github from "./socials/github.svg";
 import linkedin from "./socials/linkedin.svg";
 import call from "./socials/call.svg";
 import whatsapp from "./socials/whatsapp.svg";
@@ -65,12 +64,11 @@ export {
   premierepro,
   mediaencoder,
   capcut,
-  likhithvisuals,
+  thewed24,
   nexgen,
   pixelplanet,
   xpensivemedia,
   defaultAvatar,
-  github,
   linkedin,
   call,
   whatsapp,

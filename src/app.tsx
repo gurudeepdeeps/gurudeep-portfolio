@@ -22,8 +22,8 @@ const Home = () => {
         <Hero />
       </div>
       <About />
-      <Experience />
       <Works />
+      <Experience />
       <Feedbacks />
 
       <div className="relative z-0">

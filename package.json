@@ -43,7 +43,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run check-types && vite build",
     "preview": "vite preview",
     "check-types": "tsc --noEmit"
   },

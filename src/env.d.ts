@@ -1,11 +1,13 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_APP_SERVICE_ID: string;
-  readonly VITE_APP_TEMPLATE_ID: string;
-  readonly VITE_APP_EMAILJS_RECIEVER: string;
-  readonly VITE_APP_EMAILJS_KEY: string;
-  // more env variables...
+  readonly VITE_APPWRITE_ENDPOINT: string;
+  readonly VITE_APPWRITE_PROJECT_ID: string;
+  readonly VITE_APPWRITE_DATABASE_ID: string;
+  readonly VITE_APPWRITE_COLLECTION_PROJECTS: string;
+  readonly VITE_APPWRITE_COLLECTION_EXPERIENCE: string;
+  readonly VITE_APPWRITE_COLLECTION_ENQUIRIES: string;
+  readonly VITE_APPWRITE_BUCKET_ID: string;
 }
 
 interface ImportMeta {
