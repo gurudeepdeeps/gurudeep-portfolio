@@ -45,7 +45,7 @@ const FeedbackCard = ({
         {/* User Image */}
         <img
           src={image}
-          alt={`feedback-by-${name}`}
+          alt={`Testimonial client avatar - ${name} from ${company}`}
           className="w-10 h-10 rounded-full object-cover"
         />
       </div>

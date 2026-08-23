@@ -5,6 +5,7 @@ import { styles } from "../styles";
 import { cn } from "../utils/lib";
 import { databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS } from "../lib/appwrite";
 import { Query } from "appwrite";
+import { ProjectCardSkeleton, CategoryPillSkeleton } from "./Skeleton";
 
 const FALLBACK_PROJECTS: ProjectData[] = [
   {
@@ -129,7 +130,7 @@ const ProjectCard = ({
         <div className="relative w-full h-[230px] rounded-2xl overflow-hidden bg-black/30">
           <img
             src={image}
-            alt={name}
+            alt={`${name} - ${category || 'Project'} preview by Gurudeep V`}
             className="w-full h-full object-cover"
             loading="lazy"
             onError={(e) => {
@@ -297,19 +298,21 @@ export const Works = () => {
       )}
 
       <div className="mt-12 flex flex-wrap gap-7">
-        {filteredProjects.map((project, i) => (
-          <ProjectCard key={project.$id || `project-${i}`} index={i} {...project} />
-        ))}
+        {loading ? (
+          <>
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+            <ProjectCardSkeleton />
+          </>
+        ) : (
+          filteredProjects.map((project, i) => (
+            <ProjectCard key={project.$id || `project-${i}`} index={i} {...project} />
+          ))
+        )}
 
         {!loading && filteredProjects.length === 0 && (
           <div className="w-full py-12 text-center text-white/50 bg-tertiary/20 rounded-2xl border border-white/5">
             No projects found under "{selectedCategory}".
-          </div>
-        )}
-
-        {loading && (
-          <div className="w-full flex justify-center py-10">
-            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
           </div>
         )}
       </div>

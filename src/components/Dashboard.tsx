@@ -16,6 +16,8 @@ import {
 } from "../lib/appwrite";
 import { ID, Query } from "appwrite";
 import { motion, AnimatePresence } from "framer-motion";
+import SEOHead from "./SEOHead";
+import { DashboardStatCardSkeleton, TableRowSkeleton, ProjectCardSkeleton } from "./Skeleton";
 import { 
   LayoutDashboard, 
   Briefcase, 
@@ -178,7 +180,7 @@ const Dashboard = () => {
     return {
       name: "Gurudeep V",
       email: "gurudeepv55@gmail.com",
-      phone: "+91 6363770057",
+      phone: "+91 7353577717",
       logo: "/logo.webp"
     };
   });
@@ -186,7 +188,7 @@ const Dashboard = () => {
   const [profileForm, setProfileForm] = useState({
     name: userData?.name || "Gurudeep V",
     email: userData?.email || "gurudeepv55@gmail.com",
-    phone: userData?.phone || "+91 6363770057",
+    phone: userData?.phone || "+91 7353577717",
     logo: userData?.logo || "/logo.webp",
     logoFile: null as File | null
   });
@@ -702,6 +704,10 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen bg-[#050816] text-white overflow-hidden">
+      <SEOHead
+        title="Admin Dashboard | Gurudeep V Portfolio"
+        description="Manage projects, categories, client enquiries, and admin profile settings for Gurudeep V Portfolio."
+      />
       {/* Sidebar */}
       <motion.aside
         animate={{ width: isSidebarOpen ? 280 : 80 }}
@@ -799,10 +805,12 @@ const Dashboard = () => {
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          {loading ? (
-            <div className="h-full flex flex-col items-center justify-center gap-3">
-              <Loader2 className="animate-spin text-indigo-500" size={44} />
-              <p className="text-xs text-white/40 font-mono">Syncing Cloud Database...</p>
+            {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              <DashboardStatCardSkeleton />
+              <DashboardStatCardSkeleton />
+              <DashboardStatCardSkeleton />
+              <DashboardStatCardSkeleton />
             </div>
           ) : (
             <AnimatePresence mode="wait">
@@ -953,7 +961,7 @@ const Dashboard = () => {
                         <div key={p.$id} className="bg-[#151030]/30 border border-white/5 rounded-3xl overflow-hidden group hover:border-indigo-500/30 transition-all flex flex-col justify-between">
                           <div>
                             <div className="h-48 overflow-hidden relative bg-black/40">
-                              <img src={p.image || "/placeholder.png"} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
+                              <img src={p.image || "/placeholder.png"} alt={`${p.name} - ${p.category || 'Project'} thumbnail`} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
                               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity backdrop-blur-xs">
                                 <button onClick={() => handleDeleteProject(p.$id)} className="p-2.5 bg-red-500/80 hover:bg-red-500 rounded-xl text-white transition-colors" title="Delete Project" aria-label="Delete Project"><Trash2 size={18} /></button>
                                 {p.live_site_link && (
@@ -1305,7 +1313,7 @@ const Dashboard = () => {
                               type="text"
                               value={profileForm.phone}
                               onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                              placeholder="e.g. +91 6363770057"
+                              placeholder="e.g. +91 7353577717"
                               className="w-full pl-11 pr-4 py-3 bg-black/30 border border-white/10 rounded-2xl outline-none focus:border-indigo-500/50 text-white text-sm"
                             />
                           </div>

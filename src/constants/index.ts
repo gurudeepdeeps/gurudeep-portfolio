@@ -11,12 +11,10 @@ import {
   html,
   css,
   reactjs,
-  tailwind,
   nodejs,
   mongodb,
   git,
   figma,
-  docker,
   aftereffects,
   premierepro,
   mediaencoder,
@@ -25,7 +23,6 @@ import {
   nexgen,
   pixelplanet,
   xpensivemedia,
-  threejs,
   defaultAvatar,
   linkedin,
   call,
@@ -42,11 +39,6 @@ export const NAV_LINKS = [
   {
     id: "projects",
     title: "Projects",
-    link: null,
-  },
-  {
-    id: "work",
-    title: "Work",
     link: null,
   },
   {
@@ -197,13 +189,11 @@ export const TESTIMONIALS = [
   },
 ] as const;
 
-
-
 export const SOCIALS = [
   {
     name: "Call",
     icon: call,
-    link: "tel:+916363770057", // Replace with actual phone number
+    link: "tel:+917353577717",
   },
   {
     name: "Linkedin",
@@ -213,6 +203,6 @@ export const SOCIALS = [
   {
     name: "WhatsApp",
     icon: whatsapp,
-    link: "https://wa.me/916363770057", // Replace with actual WhatsApp number
+    link: "https://wa.me/917353577717?text=Hi%20Gurudeep%2C%20I%20visited%20your%20portfolio%20website%20and%20would%20like%20to%20discuss%20a%20project%20with%20you!",
   },
 ] as const;

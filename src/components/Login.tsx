@@ -4,6 +4,7 @@ import { login, getCurrentUser, hasAppwriteSessionCookie } from "../lib/appwrite
 import { motion } from "framer-motion";
 import { LogIn, User, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import SEOHead from "./SEOHead";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -45,7 +46,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#050816] relative overflow-hidden">
+    <div className="relative z-0 bg-[#050816] min-h-screen flex items-center justify-center p-4 overflow-hidden">
+      <SEOHead
+        title="Admin Login | Gurudeep V Portfolio"
+        description="Secure Admin Authentication Portal for Gurudeep V Portfolio Management."
+      />
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-900/20 via-primary/50 to-primary pointer-events-none" />
       <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[120px] rounded-full" />
