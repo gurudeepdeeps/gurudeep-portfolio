@@ -291,38 +291,21 @@ const Dashboard = () => {
           imageUrl = storage.getFileView(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
           console.info("[ADMIN_PROJECT_EDIT] Image upload success", { fileId: uploadRes.$id, projectId: editProjectId });
         }
-        const payload: Record<string, any> = {
-          name: editForm.name,
-          description: editForm.description,
-          category: editForm.category,
-          tags: editForm.tags,
-          image: imageUrl,
-          live_site_link: editForm.live_site_link
-        };
-
-        try {
-          await databases.updateDocument(
-            APPWRITE_DATABASE_ID,
-            APPWRITE_COLLECTION_PROJECTS,
-            editProjectId!,
-            payload
-          );
-        } catch (updateErr: any) {
-          // If category attribute is not yet created in Appwrite collection schema, retry without category
-          if (updateErr?.message?.includes("category") || updateErr?.message?.includes("attribute") || updateErr?.code === 400) {
-            delete payload.category;
-            await databases.updateDocument(
-              APPWRITE_DATABASE_ID,
-              APPWRITE_COLLECTION_PROJECTS,
-              editProjectId!,
-              payload
-            );
-          } else {
-            throw updateErr;
+        await databases.updateDocument(
+          APPWRITE_DATABASE_ID,
+          APPWRITE_COLLECTION_PROJECTS,
+          editProjectId!,
+          {
+            name: editForm.name,
+            description: editForm.description,
+            category: editForm.category,
+            tags: editForm.tags,
+            image: imageUrl,
+            live_site_link: editForm.live_site_link
           }
-        }
+        );
         console.info("[ADMIN_PROJECT_EDIT] Update success", { projectId: editProjectId });
-        toast.success("Project updated successfully!");
+        toast.success("Project updated successfully in cloud!");
         setIsEditModalOpen(false);
         setEditProjectId(null);
         fetchData();
@@ -601,41 +584,24 @@ const Dashboard = () => {
         console.info("[ADMIN_PROJECT_CREATE] Image upload success", { fileId: uploadRes.$id });
       }
 
-      const createPayload: Record<string, any> = {
-        name: projectForm.name,
-        description: projectForm.description,
-        category: projectForm.category || "Portfolio",
-        tags: projectForm.tags,
-        image: imageUrl,
-        live_site_link: projectForm.live_site_link,
-        display_order: nextDisplayOrder
-      };
-
-      let createdProject;
-      try {
-        createdProject = await databases.createDocument(
-          APPWRITE_DATABASE_ID,
-          APPWRITE_COLLECTION_PROJECTS,
-          ID.unique(),
-          createPayload
-        );
-      } catch (createErr: any) {
-        if (createErr?.message?.includes("category") || createErr?.message?.includes("attribute") || createErr?.code === 400) {
-          delete createPayload.category;
-          createdProject = await databases.createDocument(
-            APPWRITE_DATABASE_ID,
-            APPWRITE_COLLECTION_PROJECTS,
-            ID.unique(),
-            createPayload
-          );
-        } else {
-          throw createErr;
+      const createdProject = await databases.createDocument(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_COLLECTION_PROJECTS,
+        ID.unique(),
+        {
+          name: projectForm.name,
+          description: projectForm.description,
+          category: projectForm.category || "Portfolio",
+          tags: projectForm.tags,
+          image: imageUrl,
+          live_site_link: projectForm.live_site_link,
+          display_order: nextDisplayOrder
         }
-      }
+      );
 
       console.info("[ADMIN_PROJECT_CREATE] Create success", { projectId: createdProject.$id });
 
-      toast.success("Project created successfully!");
+      toast.success("Project created successfully in cloud!");
       setIsModalOpen(false);
       setProjectForm({ name: "", description: "", category: "Portfolio", tags: "", live_site_link: "", imageFile: null });
       fetchData();
