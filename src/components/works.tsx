@@ -173,8 +173,6 @@ const ProjectCard = ({
   );
 };
 
-const CATEGORIES = ["All", "Wedding", "Portfolio", "Real Estate", "Social Contribution"];
-
 // Works
 export const Works = () => {
   const [dynamicProjects, setDynamicProjects] = useState<ProjectData[]>([]);
@@ -273,7 +271,7 @@ export const Works = () => {
 
         {/* Category Filters */}
         <div className="flex flex-wrap gap-2 sm:gap-3 mt-2">
-          {CATEGORIES.map((cat) => (
+          {categoriesList.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
