@@ -270,21 +270,23 @@ export const Works = () => {
         </p>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap gap-2 sm:gap-3 mt-2">
-          {categoriesList.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={cn(
-                "px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 border",
-                selectedCategory === cat
-                  ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-transparent shadow-lg shadow-indigo-500/25 scale-105"
-                  : "bg-tertiary/60 text-white/70 border-white/10 hover:border-white/20 hover:text-white"
-              )}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="w-full mt-2 overflow-x-auto no-scrollbar scroll-smooth py-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex items-center gap-2 sm:gap-3 sm:flex-wrap w-max sm:w-auto">
+            {categoriesList.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={cn(
+                  "px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 border whitespace-nowrap shrink-0",
+                  selectedCategory === cat
+                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-transparent shadow-lg shadow-indigo-500/25 scale-105"
+                    : "bg-tertiary/60 text-white/70 border-white/10 hover:border-white/20 hover:text-white"
+                )}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

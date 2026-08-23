@@ -79,6 +79,12 @@ const sortProjectsByCustomOrder = (projectList: any[]) => {
   });
 };
 
+const extractAppwriteFileId = (imageUrl: string): string | null => {
+  if (!imageUrl || typeof imageUrl !== "string") return null;
+  const match = imageUrl.match(/\/files\/([a-zA-Z0-9_-]+)\//);
+  return match && match[1] ? match[1] : null;
+};
+
 const Dashboard = () => {
   // Enquiry Edit Modal State and Handlers
   const [isEditEnquiryModalOpen, setIsEditEnquiryModalOpen] = useState(false);
@@ -283,7 +289,9 @@ const Dashboard = () => {
       try {
         let imageUrl = editForm.image;
         if (editForm.imageFile) {
-          console.info("[ADMIN_PROJECT_EDIT] Uploading new image", { projectId: editProjectId });
+          const oldFileId = extractAppwriteFileId(editForm.image);
+          console.info("[ADMIN_PROJECT_EDIT] Uploading new image", { projectId: editProjectId, oldFileId });
+
           const uploadRes = await storage.createFile(
             APPWRITE_BUCKET_ID,
             ID.unique(),
@@ -291,6 +299,16 @@ const Dashboard = () => {
           );
           imageUrl = storage.getFileView(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
           console.info("[ADMIN_PROJECT_EDIT] Image upload success", { fileId: uploadRes.$id, projectId: editProjectId });
+
+          // Delete old image from cloud bucket
+          if (oldFileId && oldFileId !== uploadRes.$id) {
+            try {
+              await storage.deleteFile(APPWRITE_BUCKET_ID, oldFileId);
+              console.info("[ADMIN_PROJECT_EDIT] Old cloud image deleted", { oldFileId });
+            } catch (err) {
+              console.warn("[ADMIN_PROJECT_EDIT] Could not delete old cloud image file", err);
+            }
+          }
         }
         await databases.updateDocument(
           APPWRITE_DATABASE_ID,
@@ -626,10 +644,23 @@ const Dashboard = () => {
       return;
     }
 
-    console.info("[ADMIN_PROJECT_DELETE] Delete started", { projectId: id });
+    const targetProject = projects.find((p) => p.$id === id);
+    const fileId = targetProject?.image ? extractAppwriteFileId(targetProject.image) : null;
+
+    console.info("[ADMIN_PROJECT_DELETE] Delete started", { projectId: id, fileId });
     try {
       await databases.deleteDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS, id);
       console.info("[ADMIN_PROJECT_DELETE] Delete success", { projectId: id });
+
+      // Delete image file from Appwrite Storage
+      if (fileId) {
+        try {
+          await storage.deleteFile(APPWRITE_BUCKET_ID, fileId);
+          console.info("[ADMIN_PROJECT_DELETE] Storage file delete success", { fileId });
+        } catch (storageErr) {
+          console.warn("[ADMIN_PROJECT_DELETE] Could not delete image file from cloud storage", storageErr);
+        }
+      }
 
       const remainingProjects = projects.filter((p) => p.$id !== id);
       setProjects(remainingProjects);
