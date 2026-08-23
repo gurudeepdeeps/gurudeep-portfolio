@@ -32,7 +32,11 @@ import {
   ExternalLink,
   Mail,
   Calendar,
-  User as UserIcon
+  User as UserIcon,
+  Tag,
+  Edit2,
+  Save,
+  FolderTree
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -220,6 +224,95 @@ const Dashboard = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const navigate = useNavigate();
+
+  // Categories State
+  const DEFAULT_CATEGORIES = ["Wedding", "Portfolio", "Real Estate", "Social Contribution"];
+
+  const [categories, setCategories] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("gurudeep_portfolio_categories");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_CATEGORIES;
+  });
+
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [editingCategoryName, setEditingCategoryName] = useState("");
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("gurudeep_portfolio_categories", JSON.stringify(categories));
+    } catch (e) {}
+  }, [categories]);
+
+  const handleAddCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newCategoryName.trim();
+    if (!trimmed) return;
+
+    if (categories.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+      toast.error("Category already exists!");
+      return;
+    }
+
+    setCategories((prev) => [...prev, trimmed]);
+    setNewCategoryName("");
+    toast.success(`Category "${trimmed}" added successfully!`);
+  };
+
+  const handleStartEditCategory = (cat: string) => {
+    setEditingCategory(cat);
+    setEditingCategoryName(cat);
+  };
+
+  const handleSaveEditCategory = async (oldCat: string) => {
+    const trimmed = editingCategoryName.trim();
+    if (!trimmed || trimmed === oldCat) {
+      setEditingCategory(null);
+      return;
+    }
+
+    if (categories.some((c) => c.toLowerCase() === trimmed.toLowerCase() && c.toLowerCase() !== oldCat.toLowerCase())) {
+      toast.error("A category with this name already exists!");
+      return;
+    }
+
+    setCategories((prev) => prev.map((c) => (c === oldCat ? trimmed : c)));
+
+    // Update matching projects
+    const affectedProjects = projects.filter((p) => (p.category || "").toLowerCase() === oldCat.toLowerCase());
+    if (affectedProjects.length > 0) {
+      try {
+        for (const proj of affectedProjects) {
+          await databases.updateDocument(
+            APPWRITE_DATABASE_ID,
+            APPWRITE_COLLECTION_PROJECTS,
+            proj.$id,
+            { category: trimmed }
+          );
+        }
+        fetchData();
+      } catch (err) {
+        console.error("Failed to update projects for renamed category", err);
+      }
+    }
+
+    setEditingCategory(null);
+    toast.success(`Category updated to "${trimmed}"!`);
+  };
+
+  const handleDeleteCategory = (catToDelete: string) => {
+    if (!window.confirm(`Are you sure you want to delete the category "${catToDelete}"?`)) {
+      return;
+    }
+
+    setCategories((prev) => prev.filter((c) => c !== catToDelete));
+    toast.success(`Category "${catToDelete}" deleted!`);
+  };
 
   // Project Form State
   const [projectForm, setProjectForm] = useState({
@@ -440,6 +533,7 @@ const Dashboard = () => {
   const menuItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "projects", label: "Projects", icon: Briefcase },
+    { id: "categories", label: "Categories", icon: Tag },
     { id: "enquiries", label: "Enquiries", icon: MessageSquare },
   ];
 
@@ -605,10 +699,11 @@ const Dashboard = () => {
                                  onChange={e => setEditForm({...editForm, category: e.target.value})}
                                  className="w-full p-4 bg-black/40 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50 text-white"
                                >
-                                 <option value="Wedding" className="bg-[#151030] text-white">Wedding</option>
-                                 <option value="Portfolio" className="bg-[#151030] text-white">Portfolio</option>
-                                 <option value="Real Estate" className="bg-[#151030] text-white">Real Estate</option>
-                                 <option value="Social Contribution" className="bg-[#151030] text-white">Social Contribution</option>
+                                 {categories.map((cat) => (
+                                   <option key={cat} value={cat} className="bg-[#151030] text-white">
+                                     {cat}
+                                   </option>
+                                 ))}
                                </select>
                              </div>
 
@@ -629,6 +724,117 @@ const Dashboard = () => {
                          </motion.div>
                         </div>
                       )}
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === "categories" && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                  <div className="flex justify-between items-center bg-[#151030]/50 p-6 rounded-3xl border border-white/5">
+                    <div>
+                      <h3 className="text-lg font-bold">Manage Categories</h3>
+                      <p className="text-xs text-white/50 mt-1">Add, edit, or remove project categories. Projects assigned to renamed categories will update automatically.</p>
+                    </div>
+                  </div>
+
+                  {/* Add Category Form */}
+                  <div className="bg-[#151030]/30 border border-white/5 p-6 rounded-3xl max-w-xl">
+                    <h4 className="font-bold text-md mb-4 flex items-center gap-2 text-white">
+                      <Plus size={18} className="text-indigo-400" /> Add New Category
+                    </h4>
+                    <form onSubmit={handleAddCategory} className="flex gap-3">
+                      <input
+                        type="text"
+                        placeholder="e.g. E-Commerce, Mobile Apps, Branding"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        className="flex-1 p-3.5 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-indigo-500/50 text-white text-sm"
+                        required
+                      />
+                      <button
+                        type="submit"
+                        className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-2xl transition-all shadow-lg shadow-indigo-600/20 text-sm whitespace-nowrap"
+                      >
+                        Add Category
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Categories Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {categories.map((cat) => {
+                      const projectCount = projects.filter(
+                        (p) => (p.category || "Portfolio").toLowerCase() === cat.toLowerCase()
+                      ).length;
+
+                      return (
+                        <div
+                          key={cat}
+                          className="p-6 bg-[#151030]/30 border border-white/5 rounded-3xl flex flex-col justify-between group hover:border-indigo-500/30 transition-all"
+                        >
+                          {editingCategory === cat ? (
+                            <div className="space-y-3">
+                              <input
+                                type="text"
+                                value={editingCategoryName}
+                                onChange={(e) => setEditingCategoryName(e.target.value)}
+                                className="w-full p-2.5 bg-black/40 border border-white/10 rounded-xl text-sm font-semibold outline-none focus:border-yellow-500 text-white"
+                                autoFocus
+                              />
+                              <div className="flex gap-2 justify-end">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingCategory(null)}
+                                  className="px-3 py-1.5 text-xs text-white/50 hover:text-white"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleSaveEditCategory(cat)}
+                                  className="px-4 py-1.5 bg-yellow-500 text-black text-xs font-bold rounded-lg hover:bg-yellow-400 transition-all"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="p-2 bg-indigo-500/10 text-indigo-400 rounded-xl">
+                                    <Tag size={18} />
+                                  </span>
+                                  <span className="text-[11px] bg-white/5 px-2.5 py-1 rounded-full text-white/50 font-medium">
+                                    {projectCount} {projectCount === 1 ? "Project" : "Projects"}
+                                  </span>
+                                </div>
+                                <h4 className="font-bold text-lg text-white mt-1">{cat}</h4>
+                              </div>
+
+                              <div className="flex gap-2 justify-end mt-6 pt-4 border-t border-white/5">
+                                <button
+                                  onClick={() => handleStartEditCategory(cat)}
+                                  className="p-2 bg-yellow-500/80 hover:bg-yellow-500 rounded-lg text-black transition-all"
+                                  title="Edit Category Name"
+                                  aria-label="Edit Category Name"
+                                >
+                                  <Edit2 size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteCategory(cat)}
+                                  className="p-2 bg-red-500/80 hover:bg-red-500 rounded-lg text-white transition-all"
+                                  title="Delete Category"
+                                  aria-label="Delete Category"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </motion.div>
               )}
@@ -712,10 +918,11 @@ const Dashboard = () => {
                     onChange={e => setProjectForm({...projectForm, category: e.target.value})}
                     className="w-full p-4 bg-black/40 border border-white/5 rounded-2xl outline-none focus:border-indigo-500/50 text-white"
                   >
-                    <option value="Wedding" className="bg-[#151030] text-white">Wedding</option>
-                    <option value="Portfolio" className="bg-[#151030] text-white">Portfolio</option>
-                    <option value="Real Estate" className="bg-[#151030] text-white">Real Estate</option>
-                    <option value="Social Contribution" className="bg-[#151030] text-white">Social Contribution</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat} className="bg-[#151030] text-white">
+                        {cat}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

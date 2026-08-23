@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 // ...existing code...
 import { styles } from "../styles";
@@ -15,45 +15,33 @@ const FALLBACK_PROJECTS: ProjectData[] = [
       { name: "React", color: "text-blue-400" },
       { name: "Tailwind", color: "text-sky-400" },
     ],
-    image: "/project-images/nexgen.png",
+    image: "/project-images/wed24.webp",
     source_code_link: "",
     live_site_link: "https://thewed24.com",
   },
   {
-    name: "M S Properties",
-    description: "Real estate listing platform presenting property listings effectively to customers.",
-    category: "Real Estate",
+    name: "Xpensive Films",
+    description: "Developed and maintained dynamic web applications using React js for Xpensive Media, an agency specializing in digital solutions.",
+    category: "Portfolio",
     tags: [
       { name: "React", color: "text-blue-400" },
       { name: "NodeJS", color: "text-green-400" },
     ],
-    image: "/project-images/xpensivemedia.png",
+    image: "/project-images/xpensivefilms.webp",
     source_code_link: "",
-    live_site_link: "",
+    live_site_link: "https://xpensivefilms.vercel.app",
   },
   {
-    name: "Nexgen MCA",
-    description: "College web platform with dynamic pages, clear information architecture, and modern UI.",
+    name: "Likhith Portfolio",
+    description: "Developed a dynamic 3D web applications using React js for Likhith D A, an creative video editor.",
     category: "Portfolio",
     tags: [
       { name: "React", color: "text-blue-400" },
       { name: "TypeScript", color: "text-sky-400" },
     ],
-    image: "/project-images/nexgen.png",
+    image: "/project-images/likhith-portfolio.webp",
     source_code_link: "",
-    live_site_link: "https://nexgen-mca.vercel.app",
-  },
-  {
-    name: "Xpensive Media",
-    description: "Agency showcase website built for fast browsing and service storytelling.",
-    category: "Social Contribution",
-    tags: [
-      { name: "React", color: "text-blue-400" },
-      { name: "Vite", color: "text-purple-400" },
-    ],
-    image: "/project-images/xpensivemedia.png",
-    source_code_link: "",
-    live_site_link: "https://xpensivemedia.vercel.app",
+    live_site_link: "https://portfolio-likhith.vercel.app",
   },
 ];
 
@@ -303,7 +291,7 @@ export const Works = () => {
 
         {loading && (
           <div className="w-full flex justify-center py-10">
-             <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
           </div>
         )}
       </div>
