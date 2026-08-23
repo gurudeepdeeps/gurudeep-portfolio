@@ -182,6 +182,24 @@ export const Works = () => {
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
 
+  const categoriesList = useMemo(() => {
+    const set = new Set<string>(["All"]);
+
+    // Extract categories dynamically from cloud projects
+    dynamicProjects.forEach((p) => {
+      if (p.category && typeof p.category === "string" && p.category.trim() !== "") {
+        set.add(p.category.trim());
+      }
+    });
+
+    // If cloud has no custom categories yet, provide default categories
+    if (set.size === 1) {
+      ["Wedding", "Portfolio", "Real Estate", "Social Contribution"].forEach((c) => set.add(c));
+    }
+
+    return Array.from(set);
+  }, [dynamicProjects]);
+
   useEffect(() => {
     const fetchProjects = async () => {
       console.info("[PROJECTS_FETCH] Starting fetch from Appwrite", {

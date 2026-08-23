@@ -117,7 +117,11 @@ const Dashboard = () => {
       fetchData();
     } catch (error: any) {
       console.error("[ADMIN_ENQUIRY_EDIT] Update failed", error);
-      toast.error(error.message || "Failed to update enquiry");
+      if (error?.code === 401 || error?.status === 401 || error?.message?.includes("authorized")) {
+        toast.error("Appwrite 401 Permission Error: Please go to Appwrite Console -> Databases -> enquiries_collection -> Settings -> Permissions and grant Update permission to 'any' or 'users'.");
+      } else {
+        toast.error(error.message || "Failed to update enquiry");
+      }
     } finally {
       console.info("[ADMIN_ENQUIRY_EDIT] Update flow completed", { enquiryId: editEnquiryId });
       setIsSubmitting(false);
@@ -136,9 +140,13 @@ const Dashboard = () => {
       console.info("[ADMIN_ENQUIRY_DELETE] Delete success", { enquiryId: id });
       toast.success("Enquiry deleted");
       setEnquiries((prev: any[]) => prev.filter(e => e.$id !== id));
-    } catch (error) {
+    } catch (error: any) {
       console.error("[ADMIN_ENQUIRY_DELETE] Delete failed", error);
-      toast.error("Failed to delete enquiry");
+      if (error?.code === 401 || error?.status === 401 || error?.message?.includes("authorized")) {
+        toast.error("Appwrite 401 Permission Error: Go to Appwrite Console -> Databases -> enquiries_collection -> Settings -> Permissions and enable Delete permission for role 'any' or 'users'.");
+      } else {
+        toast.error(error?.message || "Failed to delete enquiry");
+      }
     }
   };
 
@@ -195,19 +203,36 @@ const Dashboard = () => {
           imageUrl = storage.getFileView(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
           console.info("[ADMIN_PROJECT_EDIT] Image upload success", { fileId: uploadRes.$id, projectId: editProjectId });
         }
-        await databases.updateDocument(
-          APPWRITE_DATABASE_ID,
-          APPWRITE_COLLECTION_PROJECTS,
-          editProjectId!,
-          {
-            name: editForm.name,
-            description: editForm.description,
-            category: editForm.category,
-            tags: editForm.tags,
-            image: imageUrl,
-            live_site_link: editForm.live_site_link
+        const payload: Record<string, any> = {
+          name: editForm.name,
+          description: editForm.description,
+          category: editForm.category,
+          tags: editForm.tags,
+          image: imageUrl,
+          live_site_link: editForm.live_site_link
+        };
+
+        try {
+          await databases.updateDocument(
+            APPWRITE_DATABASE_ID,
+            APPWRITE_COLLECTION_PROJECTS,
+            editProjectId!,
+            payload
+          );
+        } catch (updateErr: any) {
+          // If category attribute is not yet created in Appwrite collection schema, retry without category
+          if (updateErr?.message?.includes("category") || updateErr?.message?.includes("attribute") || updateErr?.code === 400) {
+            delete payload.category;
+            await databases.updateDocument(
+              APPWRITE_DATABASE_ID,
+              APPWRITE_COLLECTION_PROJECTS,
+              editProjectId!,
+              payload
+            );
+          } else {
+            throw updateErr;
           }
-        );
+        }
         console.info("[ADMIN_PROJECT_EDIT] Update success", { projectId: editProjectId });
         toast.success("Project updated successfully!");
         setIsEditModalOpen(false);
@@ -215,7 +240,11 @@ const Dashboard = () => {
         fetchData();
       } catch (error: any) {
         console.error("[ADMIN_PROJECT_EDIT] Update failed", error);
-        toast.error(error.message || "Failed to update project");
+        if (error?.code === 401 || error?.status === 401 || error?.message?.includes("authorized")) {
+          toast.error("Appwrite 401 Permission Error: Please go to Appwrite Console -> Database -> projects_collection -> Settings -> Permissions and enable Update permission for 'any' or 'users'.");
+        } else {
+          toast.error(error.message || "Failed to update project");
+        }
       } finally {
         console.info("[ADMIN_PROJECT_EDIT] Update flow completed", { projectId: editProjectId });
         setIsSubmitting(false);
@@ -364,7 +393,24 @@ const Dashboard = () => {
         projectsCount: projRes.documents.length,
         enquiriesCount: enqRes.documents.length,
       });
-      setProjects(sortProjectsByCustomOrder(projRes.documents));
+      const sortedProjects = sortProjectsByCustomOrder(projRes.documents);
+      setProjects(sortedProjects);
+
+      // Extract categories directly from cloud documents
+      const cloudCategories = Array.from(
+        new Set(
+          projRes.documents
+            .map((doc: any) => doc.category)
+            .filter((cat: any) => typeof cat === "string" && cat.trim() !== "")
+        )
+      ) as string[];
+
+      if (cloudCategories.length > 0) {
+        setCategories((prev) => {
+          const merged = new Set([...cloudCategories, ...prev]);
+          return Array.from(merged);
+        });
+      }
 
       setEnquiries(enqRes.documents);
       setOrderDirty(false);
@@ -463,20 +509,37 @@ const Dashboard = () => {
         console.info("[ADMIN_PROJECT_CREATE] Image upload success", { fileId: uploadRes.$id });
       }
 
-      const createdProject = await databases.createDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_PROJECTS,
-        ID.unique(),
-        {
-          name: projectForm.name,
-          description: projectForm.description,
-          category: projectForm.category || "Portfolio",
-          tags: projectForm.tags,
-          image: imageUrl,
-          live_site_link: projectForm.live_site_link,
-          display_order: nextDisplayOrder
+      const createPayload: Record<string, any> = {
+        name: projectForm.name,
+        description: projectForm.description,
+        category: projectForm.category || "Portfolio",
+        tags: projectForm.tags,
+        image: imageUrl,
+        live_site_link: projectForm.live_site_link,
+        display_order: nextDisplayOrder
+      };
+
+      let createdProject;
+      try {
+        createdProject = await databases.createDocument(
+          APPWRITE_DATABASE_ID,
+          APPWRITE_COLLECTION_PROJECTS,
+          ID.unique(),
+          createPayload
+        );
+      } catch (createErr: any) {
+        if (createErr?.message?.includes("category") || createErr?.message?.includes("attribute") || createErr?.code === 400) {
+          delete createPayload.category;
+          createdProject = await databases.createDocument(
+            APPWRITE_DATABASE_ID,
+            APPWRITE_COLLECTION_PROJECTS,
+            ID.unique(),
+            createPayload
+          );
+        } else {
+          throw createErr;
         }
-      );
+      }
 
       console.info("[ADMIN_PROJECT_CREATE] Create success", { projectId: createdProject.$id });
 
@@ -486,7 +549,11 @@ const Dashboard = () => {
       fetchData();
     } catch (error: any) {
       console.error("[ADMIN_PROJECT_CREATE] Create failed", error);
-      toast.error(error.message || "Failed to create project");
+      if (error?.code === 401 || error?.status === 401 || error?.message?.includes("authorized")) {
+        toast.error("Appwrite 401 Permission Error: Please go to Appwrite Console -> Database -> projects_collection -> Settings -> Permissions and enable Create permission for 'any' or 'users'.");
+      } else {
+        toast.error(error.message || "Failed to create project");
+      }
     } finally {
       console.info("[ADMIN_PROJECT_CREATE] Create flow completed");
       setIsSubmitting(false);
@@ -524,9 +591,13 @@ const Dashboard = () => {
 
       setOrderDirty(false);
       toast.success("Project deleted and order reindexed");
-    } catch (error) {
+    } catch (error: any) {
       console.error("[ADMIN_PROJECT_DELETE] Delete failed", error);
-      toast.error("Deletion failed");
+      if (error?.code === 401 || error?.status === 401 || error?.message?.includes("authorized")) {
+        toast.error("Appwrite 401 Permission Error: Please go to Appwrite Console -> Database -> projects_collection -> Settings -> Permissions and enable Delete permission for 'any' or 'users'.");
+      } else {
+        toast.error(error?.message || "Deletion failed");
+      }
     }
   };
 
