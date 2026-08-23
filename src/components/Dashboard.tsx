@@ -36,7 +36,14 @@ import {
   Tag,
   Edit2,
   Save,
-  FolderTree
+  FolderTree,
+  Globe,
+  RefreshCw,
+  CheckCircle2,
+  Phone,
+  Upload,
+  Camera,
+  ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -154,7 +161,88 @@ const Dashboard = () => {
 // Removed duplicate fetchData declaration
   const [activeTab, setActiveTab] = useState("overview");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem("gurudeep_admin_profile");
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {}
+    return {
+      name: "Gurudeep V",
+      email: "gurudeepv55@gmail.com",
+      phone: "+91 6363770057",
+      logo: "/logo.webp"
+    };
+  });
+
+  const [profileForm, setProfileForm] = useState({
+    name: userData?.name || "Gurudeep V",
+    email: userData?.email || "gurudeepv55@gmail.com",
+    phone: userData?.phone || "+91 6363770057",
+    logo: userData?.logo || "/logo.webp",
+    logoFile: null as File | null
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  useEffect(() => {
+    if (userData) {
+      setProfileForm((prev) => ({
+        ...prev,
+        name: userData.name || prev.name,
+        email: userData.email || prev.email,
+        phone: userData.phone || prev.phone,
+        logo: userData.logo || prev.logo
+      }));
+    }
+  }, [userData]);
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingProfile(true);
+    console.info("[ADMIN_PROFILE_UPDATE] Save started", { name: profileForm.name });
+
+    try {
+      let logoUrl = profileForm.logo;
+
+      // Upload file if selected
+      if (profileForm.logoFile) {
+        try {
+          const uploadRes = await storage.createFile(
+            APPWRITE_BUCKET_ID,
+            ID.unique(),
+            profileForm.logoFile
+          );
+          logoUrl = storage.getFileView(APPWRITE_BUCKET_ID, uploadRes.$id).toString();
+        } catch (uploadErr) {
+          console.warn("[ADMIN_PROFILE_UPDATE] Storage upload fallback to local data URL", uploadErr);
+          const reader = new FileReader();
+          logoUrl = await new Promise<string>((resolve) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(profileForm.logoFile!);
+          });
+        }
+      }
+
+      const updatedUser = {
+        ...userData,
+        name: profileForm.name,
+        email: profileForm.email,
+        phone: profileForm.phone,
+        logo: logoUrl
+      };
+
+      setUserData(updatedUser);
+      localStorage.setItem("gurudeep_admin_profile", JSON.stringify(updatedUser));
+      toast.success("Admin Profile updated successfully!");
+    } catch (error: any) {
+      console.error("[ADMIN_PROFILE_UPDATE] Save failed", error);
+      toast.error(error?.message || "Failed to update admin profile");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
   const [projects, setProjects] = useState<any[]>([]);
   const [enquiries, setEnquiries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -342,6 +430,10 @@ const Dashboard = () => {
     setCategories((prev) => prev.filter((c) => c !== catToDelete));
     toast.success(`Category "${catToDelete}" deleted!`);
   };
+
+  // Admin search & filter states
+  const [projectSearchQuery, setProjectSearchQuery] = useState("");
+  const [adminCategoryFilter, setAdminCategoryFilter] = useState("All");
 
   // Project Form State
   const [projectForm, setProjectForm] = useState({
@@ -606,6 +698,7 @@ const Dashboard = () => {
     { id: "projects", label: "Projects", icon: Briefcase },
     { id: "categories", label: "Categories", icon: Tag },
     { id: "enquiries", label: "Enquiries", icon: MessageSquare },
+    { id: "profile", label: "Admin Profile", icon: UserIcon },
   ];
 
   return (
@@ -617,10 +710,17 @@ const Dashboard = () => {
       >
         <div className="flex items-center justify-between p-6 border-b border-white/5">
           <div className={`flex items-center gap-3 ${isSidebarOpen ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/20" />
-            <span className="font-bold text-lg">Admin</span>
+            <img
+              src={userData?.logo || "/logo.webp"}
+              alt="Gurudeep V Portfolio Logo"
+              className="w-9 h-9 object-cover rounded-lg border border-white/10 shadow-lg shadow-indigo-500/20"
+            />
+            <div className="flex flex-col">
+              <span className="font-bold text-base leading-tight truncate max-w-[140px]">{userData?.name || "Gurudeep V"}</span>
+              <span className="text-[10px] text-indigo-400 font-semibold tracking-wider uppercase">Admin Portal</span>
+            </div>
           </div>
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/5 rounded-lg">
+          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/5 rounded-lg text-white/70 hover:text-white transition-colors" title="Toggle Sidebar">
             {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
@@ -632,8 +732,8 @@ const Dashboard = () => {
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all ${
                 activeTab === item.id 
-                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' 
-                  : 'text-white/40 hover:text-white/80 hover:bg-white/5'
+                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-md shadow-indigo-500/5 font-semibold' 
+                  : 'text-white/40 hover:text-white/80 hover:bg-white/5 font-medium'
               }`}
             >
               <item.icon size={22} />
@@ -643,122 +743,279 @@ const Dashboard = () => {
         </nav>
 
         <div className="p-4 border-t border-white/5 mx-4">
-          <button onClick={handleLogout} className="w-full flex items-center justify-center gap-3 px-4 py-3.5 text-red-500 hover:bg-red-500/10 rounded-2xl transition-all">
+          <button onClick={handleLogout} className="w-full flex items-center justify-center gap-3 px-4 py-3.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-2xl transition-all font-semibold">
             <LogOut size={20} />
-            {isSidebarOpen && <span className="font-semibold">Logout</span>}
+            {isSidebarOpen && <span>Logout</span>}
           </button>
         </div>
       </motion.aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full bg-[#0a0a0a]/50">
-        <header className="px-8 py-5 bg-[#050816]/90 backdrop-blur-md border-b border-white/5 flex items-center justify-between">
-          <h2 className="text-xl font-bold capitalize">{activeTab}</h2>
+      <main className="flex-1 flex flex-col h-full bg-[#0a0a0a]/50 overflow-hidden">
+        <header className="px-8 py-5 bg-[#050816]/90 backdrop-blur-md border-b border-white/5 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-             <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold">{userData?.name || "Gurudeep"}</p>
-                <p className="text-[10px] text-white/40">{userData?.email}</p>
-             </div>
-             <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center border border-white/10 uppercase font-bold text-indigo-400 ml-2">
-                {userData?.name?.charAt(0) || "G"}
-             </div>
+            <h2 className="text-xl font-bold capitalize text-white">{activeTab === "profile" ? "Admin Profile" : activeTab}</h2>
+            <span className="text-xs bg-white/5 border border-white/10 px-2.5 py-1 rounded-full text-white/50 hidden sm:inline-block font-mono">v1.1.4</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+             {/* View Live Site Link */}
+             <a
+               href="/"
+               target="_blank"
+               rel="noreferrer noopener"
+               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 transition-all"
+             >
+               <Globe size={15} className="text-indigo-400" />
+               <span className="hidden sm:inline">View Live Site</span>
+             </a>
+
+             <button
+               onClick={fetchData}
+               className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 transition-all"
+               title="Refresh Data"
+             >
+               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+             </button>
+
+             <button
+               onClick={() => setActiveTab("profile")}
+               className="flex items-center gap-3 pl-2 border-l border-white/10 hover:opacity-90 transition-opacity text-left cursor-pointer"
+               title="Edit Admin Profile"
+             >
+                <div className="text-right hidden sm:block">
+                   <p className="text-sm font-semibold">{userData?.name || "Gurudeep V"}</p>
+                   <p className="text-[10px] text-white/40">{userData?.email}</p>
+                </div>
+                <div className="relative">
+                  <img
+                    src={userData?.logo || "/logo.webp"}
+                    alt={userData?.name || "Admin"}
+                    className="w-10 h-10 rounded-full object-cover border border-white/20 shadow-lg"
+                  />
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#050816]" title="Appwrite Session Active" />
+                </div>
+             </button>
           </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           {loading ? (
-            <div className="h-full flex items-center justify-center"><Loader2 className="animate-spin text-indigo-500" size={40} /></div>
+            <div className="h-full flex flex-col items-center justify-center gap-3">
+              <Loader2 className="animate-spin text-indigo-500" size={44} />
+              <p className="text-xs text-white/40 font-mono">Syncing Cloud Database...</p>
+            </div>
           ) : (
             <AnimatePresence mode="wait">
               {activeTab === "overview" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="p-8 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl">
-                      <p className="text-white/40 text-sm">Active Projects</p>
-                      <h4 className="text-4xl font-bold mt-2">{projects.length}</h4>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 max-w-7xl mx-auto">
+                  {/* Overview Stats Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="p-6 bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 border border-indigo-500/20 rounded-3xl relative overflow-hidden group hover:border-indigo-500/40 transition-all">
+                      <div className="flex items-center justify-between">
+                        <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">Active Projects</p>
+                        <span className="p-3 bg-indigo-500/20 text-indigo-400 rounded-2xl">
+                          <Briefcase size={20} />
+                        </span>
+                      </div>
+                      <h4 className="text-4xl font-extrabold mt-3 text-white">{projects.length}</h4>
+                      <p className="text-[11px] text-indigo-300/60 mt-2 flex items-center gap-1">
+                        <CheckCircle2 size={12} className="text-emerald-400" /> Synced with Cloud DB
+                      </p>
                     </div>
-                    <div className="p-8 bg-purple-500/10 border border-purple-500/20 rounded-3xl">
-                      <p className="text-white/40 text-sm">New Enquiries</p>
-                      <h4 className="text-4xl font-bold mt-2">{enquiries.length}</h4>
+
+                    <div className="p-6 bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-3xl relative overflow-hidden group hover:border-purple-500/40 transition-all">
+                      <div className="flex items-center justify-between">
+                        <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">Categories</p>
+                        <span className="p-3 bg-purple-500/20 text-purple-400 rounded-2xl">
+                          <Tag size={20} />
+                        </span>
+                      </div>
+                      <h4 className="text-4xl font-extrabold mt-3 text-white">{categories.length}</h4>
+                      <p className="text-[11px] text-purple-300/60 mt-2 flex items-center gap-1">
+                        Dynamic front-end filters
+                      </p>
+                    </div>
+
+                    <div className="p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-3xl relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+                      <div className="flex items-center justify-between">
+                        <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">Enquiries</p>
+                        <span className="p-3 bg-emerald-500/20 text-emerald-400 rounded-2xl">
+                          <MessageSquare size={20} />
+                        </span>
+                      </div>
+                      <h4 className="text-4xl font-extrabold mt-3 text-white">{enquiries.length}</h4>
+                      <p className="text-[11px] text-emerald-300/60 mt-2 flex items-center gap-1">
+                        Client contact submissions
+                      </p>
+                    </div>
+
+                    <div className="p-6 bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 rounded-3xl relative overflow-hidden group hover:border-amber-500/40 transition-all">
+                      <div className="flex items-center justify-between">
+                        <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">Cloud Engine</p>
+                        <span className="p-3 bg-amber-500/20 text-amber-400 rounded-2xl">
+                          <Globe size={20} />
+                        </span>
+                      </div>
+                      <h4 className="text-xl font-extrabold mt-3 text-white">Appwrite</h4>
+                      <p className="text-[11px] text-amber-300/60 mt-2 flex items-center gap-1">
+                        Live Database & Bucket API
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Quick Action Shortcuts */}
+                  <div className="p-6 bg-[#151030]/40 border border-white/5 rounded-3xl">
+                    <h3 className="text-md font-bold mb-4 text-white/90">Quick Admin Shortcuts</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <button
+                        onClick={() => { setActiveTab("projects"); setIsModalOpen(true); }}
+                        className="p-4 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 rounded-2xl flex items-center gap-3 text-indigo-300 hover:text-indigo-200 transition-all text-sm font-semibold"
+                      >
+                        <Plus size={18} /> Add New Project
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("categories")}
+                        className="p-4 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 rounded-2xl flex items-center gap-3 text-purple-300 hover:text-purple-200 transition-all text-sm font-semibold"
+                      >
+                        <Tag size={18} /> Manage Categories
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("enquiries")}
+                        className="p-4 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 rounded-2xl flex items-center gap-3 text-emerald-300 hover:text-emerald-200 transition-all text-sm font-semibold"
+                      >
+                        <MessageSquare size={18} /> View Contact Messages
+                      </button>
                     </div>
                   </div>
                 </motion.div>
               )}
 
               {activeTab === "projects" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                  <div className="flex justify-between items-center bg-[#151030]/50 p-6 rounded-3xl border border-white/5">
-                    <h3 className="text-lg font-bold">Manage Work</h3>
-                    <div className="flex items-center gap-3">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-7xl mx-auto">
+                  <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 bg-[#151030]/50 p-6 rounded-3xl border border-white/5">
+                    <div>
+                      <h3 className="text-lg font-bold">Manage Work ({projects.length})</h3>
+                      <p className="text-xs text-white/50 mt-1">Set custom display order, assign categories, and edit live links.</p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
                       {orderDirty && (
                         <button
                           onClick={saveProjectOrder}
                           disabled={isSavingOrder}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-60"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-60 text-sm font-semibold"
                         >
                           {isSavingOrder ? <Loader2 size={18} className="animate-spin" /> : null}
                           Save Order
                         </button>
                       )}
-                      <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-lg shadow-indigo-600/20">
+                      <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-sm font-semibold">
                         <Plus size={18} /> Add Project
                       </button>
                     </div>
                   </div>
 
-                  <p className="text-xs text-white/50 px-1">
-                    Set exact order numbers for each project and click Save Order to sync.
-                  </p>
+                  {/* Search Bar & Category Filter in Admin */}
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-4 top-3.5 text-white/40" size={18} />
+                      <input
+                        type="text"
+                        placeholder="Search projects by title or description..."
+                        value={projectSearchQuery}
+                        onChange={(e) => setProjectSearchQuery(e.target.value)}
+                        className="w-full pl-11 pr-4 py-3 bg-[#151030]/40 border border-white/10 rounded-2xl outline-none focus:border-indigo-500/50 text-white text-sm"
+                      />
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                      {projects.map((p, index) => (
-                       <div key={p.$id} className="bg-[#151030]/30 border border-white/5 rounded-3xl overflow-hidden group hover:border-indigo-500/30 transition-all flex flex-col">
-                         <div className="h-48 overflow-hidden relative">
-                           <img src={p.image || "/placeholder.png"} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
-                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
-                             <button onClick={() => handleDeleteProject(p.$id)} className="p-2 bg-red-500/80 rounded-lg" title="Delete Project" aria-label="Delete Project"><Trash2 size={18} /></button>
-                             <a href={p.live_site_link} target="_blank" className="p-2 bg-indigo-500/80 rounded-lg" title="Open Live Site" aria-label="Open Live Site"><ExternalLink size={18} /></a>
-                             <button onClick={() => openEditModal(p)} className="p-2 bg-yellow-500/80 rounded-lg" title="Edit Project" aria-label="Edit Project"><Settings size={18} /></button>
-                           </div>
-                         </div>
-                           <div className="p-6 flex-1 flex flex-col">
-                            <div className="mb-3 flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] uppercase tracking-wider text-white/40">Order</span>
-                                <select
-                                  value={index + 1}
-                                  onChange={(e) => setProjectOrderByNumber(p.$id, Number(e.target.value))}
-                                  className="rounded-md border border-white/10 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
-                                  aria-label={`Set order for ${p.name}`}
-                                >
-                                  {Array.from({ length: projects.length }, (_, i) => i + 1).map((position) => (
-                                    <option key={`${p.$id}-position-${position}`} value={position}>
-                                      #{position}
-                                    </option>
-                                  ))}
-                                </select>
+                    <select
+                      value={adminCategoryFilter}
+                      onChange={(e) => setAdminCategoryFilter(e.target.value)}
+                      className="px-4 py-3 bg-[#151030]/40 border border-white/10 rounded-2xl outline-none text-white text-sm"
+                    >
+                      <option value="All" className="bg-[#151030]">All Categories</option>
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat} className="bg-[#151030]">{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Projects Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                      {projects
+                        .filter((p) => {
+                          const matchesQuery = p.name?.toLowerCase().includes(projectSearchQuery.toLowerCase()) ||
+                            p.description?.toLowerCase().includes(projectSearchQuery.toLowerCase());
+                          const matchesCategory = adminCategoryFilter === "All" || (p.category || "Portfolio").toLowerCase() === adminCategoryFilter.toLowerCase();
+                          return matchesQuery && matchesCategory;
+                        })
+                        .map((p, index) => (
+                        <div key={p.$id} className="bg-[#151030]/30 border border-white/5 rounded-3xl overflow-hidden group hover:border-indigo-500/30 transition-all flex flex-col justify-between">
+                          <div>
+                            <div className="h-48 overflow-hidden relative bg-black/40">
+                              <img src={p.image || "/placeholder.png"} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity backdrop-blur-xs">
+                                <button onClick={() => handleDeleteProject(p.$id)} className="p-2.5 bg-red-500/80 hover:bg-red-500 rounded-xl text-white transition-colors" title="Delete Project" aria-label="Delete Project"><Trash2 size={18} /></button>
+                                {p.live_site_link && (
+                                  <a href={p.live_site_link} target="_blank" rel="noreferrer" className="p-2.5 bg-indigo-500/80 hover:bg-indigo-500 rounded-xl text-white transition-colors" title="Open Live Site" aria-label="Open Live Site"><ExternalLink size={18} /></a>
+                                )}
+                                <button onClick={() => openEditModal(p)} className="p-2.5 bg-yellow-500/80 hover:bg-yellow-500 rounded-xl text-black transition-colors" title="Edit Project" aria-label="Edit Project"><Settings size={18} /></button>
                               </div>
-                              <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-indigo-500/30">
-                                {p.category || "Portfolio"}
-                              </span>
                             </div>
-                            <h4 className="font-bold text-lg mb-2">{p.name}</h4>
-                            <p className="text-sm text-white/40 line-clamp-2 mb-4">{p.description}</p>
-                            <div className="flex flex-wrap gap-2 mb-2">
-                              {p.tags?.split(',').map((tag: any, i: any) => (
-                               <span key={i} className="text-[10px] bg-white/5 px-2 py-1 rounded-md uppercase font-bold tracking-wider text-white/60">#{tag.trim()}</span>
-                              ))}
+                            
+                            <div className="p-6 flex-1 flex flex-col">
+                              <div className="mb-3 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] uppercase tracking-wider text-white/40 font-mono">Order</span>
+                                  <select
+                                    value={index + 1}
+                                    onChange={(e) => setProjectOrderByNumber(p.$id, Number(e.target.value))}
+                                    className="rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-[11px] text-white outline-none"
+                                    aria-label={`Set order for ${p.name}`}
+                                  >
+                                    {Array.from({ length: projects.length }, (_, i) => i + 1).map((position) => (
+                                      <option key={`${p.$id}-position-${position}`} value={position}>
+                                        #{position}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-indigo-500/30">
+                                  {p.category || "Portfolio"}
+                                </span>
+                              </div>
+
+                              <h4 className="font-bold text-lg mb-2 text-white">{p.name}</h4>
+                              <p className="text-sm text-white/50 line-clamp-2 mb-4 leading-relaxed">{p.description}</p>
+                              
+                              <div className="flex flex-wrap gap-2 mb-2">
+                                {p.tags?.split(',').map((tag: any, i: any) => (
+                                 <span key={i} className="text-[10px] bg-white/5 px-2 py-1 rounded-md uppercase font-bold tracking-wider text-white/60">#{tag.trim()}</span>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                       </div>
-                      ))}
-                      {/* Edit Project Modal */}
-                      {isEditModalOpen && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setIsEditModalOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-                         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative bg-[#151030] border border-white/10 p-8 rounded-[40px] w-full max-w-xl shadow-2xl overflow-hidden">
-                           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-indigo-500" />
-                           <h3 className="text-2xl font-bold mb-8">Edit Project</h3>
+
+                          <div className="px-6 pb-6 pt-2 border-t border-white/5 flex justify-between items-center text-xs text-white/40">
+                             <span>ID: {p.$id?.substring(0, 8)}...</span>
+                             <button onClick={() => openEditModal(p)} className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1">
+                               Edit <Edit2 size={12} />
+                             </button>
+                          </div>
+                        </div>
+                       ))}
+                   </div>
+                </motion.div>
+              )}
+
+              {/* Edit Project Modal */}
+              {isEditModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => setIsEditModalOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+                 <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative bg-[#151030] border border-white/10 p-8 rounded-[40px] w-full max-w-xl shadow-2xl overflow-hidden">
+                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-indigo-500" />
+                   <h3 className="text-2xl font-bold mb-8">Edit Project</h3>
                            <form onSubmit={handleEditProject} className="space-y-4">
                              <input type="text" placeholder="Project Name" required value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
                              <textarea placeholder="Description" rows={3} required value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
@@ -795,9 +1052,6 @@ const Dashboard = () => {
                          </motion.div>
                         </div>
                       )}
-                  </div>
-                </motion.div>
-              )}
 
               {activeTab === "categories" && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
@@ -964,6 +1218,127 @@ const Dashboard = () => {
                       )}
                     </>
                   )}
+                </motion.div>
+              )}
+
+              {activeTab === "profile" && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 max-w-4xl mx-auto">
+                  <div className="flex justify-between items-center bg-[#151030]/50 p-6 rounded-3xl border border-white/5">
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Admin Profile Settings</h3>
+                      <p className="text-xs text-white/50 mt-1">Manage your admin display name, contact email, phone number, and logo avatar.</p>
+                    </div>
+                    <span className="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3.5 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+                      <ShieldCheck size={14} /> Admin Access Granted
+                    </span>
+                  </div>
+
+                  <div className="bg-[#151030]/30 border border-white/5 p-8 rounded-3xl backdrop-blur-xl">
+                    <form onSubmit={handleSaveProfile} className="space-y-6">
+                      {/* Logo Preview & Upload */}
+                      <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-white/5">
+                        <div className="relative group">
+                          <img
+                            src={profileForm.logoFile ? URL.createObjectURL(profileForm.logoFile) : (profileForm.logo || "/logo.webp")}
+                            alt="Admin Logo"
+                            className="w-24 h-24 rounded-2xl object-cover border-2 border-indigo-500/40 shadow-xl shadow-indigo-500/10"
+                          />
+                          <label htmlFor="admin-logo-upload" className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-opacity text-white text-xs font-semibold gap-1">
+                            <Camera size={20} />
+                            Change Logo
+                          </label>
+                          <input
+                            type="file"
+                            id="admin-logo-upload"
+                            accept="image/*"
+                            onChange={(e) => setProfileForm({ ...profileForm, logoFile: e.target.files?.[0] || null })}
+                            className="hidden"
+                          />
+                        </div>
+
+                        <div className="flex-1 space-y-1 text-center sm:text-left">
+                          <h4 className="font-bold text-lg text-white">Admin Logo & Avatar</h4>
+                          <p className="text-xs text-white/50">Upload a custom logo image file or provide a logo image URL below.</p>
+                          {profileForm.logoFile && (
+                            <p className="text-xs text-emerald-400 font-mono mt-1 flex items-center gap-1">
+                              <CheckCircle2 size={12} /> Selected file: {profileForm.logoFile.name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-xs text-white/60 mb-2 font-semibold">Admin Full Name</label>
+                          <div className="relative">
+                            <UserIcon className="absolute left-4 top-3.5 text-white/30" size={18} />
+                            <input
+                              type="text"
+                              required
+                              value={profileForm.name}
+                              onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                              placeholder="e.g. Gurudeep V"
+                              className="w-full pl-11 pr-4 py-3 bg-black/30 border border-white/10 rounded-2xl outline-none focus:border-indigo-500/50 text-white text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-white/60 mb-2 font-semibold font-sans">Admin Email Address</label>
+                          <div className="relative">
+                            <Mail className="absolute left-4 top-3.5 text-white/30" size={18} />
+                            <input
+                              type="email"
+                              required
+                              value={profileForm.email}
+                              onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                              placeholder="e.g. gurudeepv55@gmail.com"
+                              className="w-full pl-11 pr-4 py-3 bg-black/30 border border-white/10 rounded-2xl outline-none focus:border-indigo-500/50 text-white text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-white/60 mb-2 font-semibold">Contact Phone Number</label>
+                          <div className="relative">
+                            <Phone className="absolute left-4 top-3.5 text-white/30" size={18} />
+                            <input
+                              type="text"
+                              value={profileForm.phone}
+                              onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                              placeholder="e.g. +91 6363770057"
+                              className="w-full pl-11 pr-4 py-3 bg-black/30 border border-white/10 rounded-2xl outline-none focus:border-indigo-500/50 text-white text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-white/60 mb-2 font-semibold">Logo Image URL</label>
+                          <div className="relative">
+                            <Globe className="absolute left-4 top-3.5 text-white/30" size={18} />
+                            <input
+                              type="text"
+                              value={profileForm.logo}
+                              onChange={(e) => setProfileForm({ ...profileForm, logo: e.target.value })}
+                              placeholder="e.g. /logo.webp or https://..."
+                              className="w-full pl-11 pr-4 py-3 bg-black/30 border border-white/10 rounded-2xl outline-none focus:border-indigo-500/50 text-white text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-white/5 flex justify-end">
+                        <button
+                          type="submit"
+                          disabled={isSavingProfile}
+                          className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-600/25 disabled:opacity-50 text-sm cursor-pointer"
+                        >
+                          {isSavingProfile ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                          Save Profile Changes
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
