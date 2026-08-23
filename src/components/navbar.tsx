@@ -49,7 +49,7 @@ export const Navbar = ({ hide = true }: NavbarProps) => {
             window.scrollTo(0, 0);
           }}
         >
-          <img src="/logo.png" alt="Logo" className="w-9 h-9 object-contain" />
+          <img src="/logo.webp" alt="Logo" className="w-9 h-9 object-contain rounded-lg" />
           <p className="text-white text-[18px] font-bold cursor-pointer flex">
             Gurudeep V&nbsp;<span className="sm:block hidden">| Developer</span>
           </p>

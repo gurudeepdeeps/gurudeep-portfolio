@@ -46,7 +46,7 @@ const Stars = (props: any) => {
 // Stars Canvas
 const StarsCanvas = () => {
   return (
-    <div className="w-full h-auto absolute inset-0 z-[-1]">
+    <div className="w-full h-auto absolute inset-0 z-[-1] pointer-events-none">
       {/* Canvas */}
       <Canvas camera={{ position: [0, 0, 1] }}>
         {/* Show stars if not fallback */}

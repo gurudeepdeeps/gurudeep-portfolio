@@ -50,7 +50,7 @@ type BallCanvasProps = {
 // Ball Canvas
 const BallCanvas = ({ icon }: BallCanvasProps) => {
   return (
-    <Canvas gl={{ preserveDrawingBuffer: true }}>
+    <Canvas gl={{ preserveDrawingBuffer: true }} style={{ touchAction: "pan-y" }}>
       {/* Show canvas loader on fallback */}
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls enableZoom={false} />

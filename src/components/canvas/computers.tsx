@@ -65,11 +65,16 @@ const ComputersCanvas = () => {
       shadows
       camera={{ position: [20, 3, 5], fov: 25 }}
       gl={{ preserveDrawingBuffer: true, alpha: true }}
+      style={{
+        pointerEvents: isMobile ? "none" : "auto",
+        touchAction: "pan-y",
+      }}
     >
       {/* Canvas Loader show on fallback */}
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           enableZoom={false}
+          enableRotate={!isMobile}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
         />

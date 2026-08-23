@@ -1,0 +1,35 @@
+# Gurudeep V (Gurudeep Portfolio / Deeps Portfolio)
+
+> Official portfolio website of Gurudeep V: https://gurudeep-portfolio.vercel.app
+
+## Overview
+Gurudeep V is a Full Stack Web Developer, Content Creator, and Video Editor based in India.
+
+## Search Queries & Aliases
+- Gurudeep V
+- Gurudeep V Portfolio
+- Gurudeep Portfolio
+- Deeps Portfolio
+- Gurudeep V Developer
+- Gurudeep V Web Developer
+
+## Primary Links
+- Official Website: https://gurudeep-portfolio.vercel.app
+- LinkedIn: https://www.linkedin.com/in/gurudeepv
+- GitHub: https://github.com/gurudeepdeeps
+
+## Technical Expertise
+- Frontend: React.js, TypeScript, JavaScript, Tailwind CSS, Three.js, HTML5, CSS3, Vite
+- Backend & Cloud: Node.js, MongoDB, Appwrite
+- Content Creation: Video Editing (After Effects, Premiere Pro, CapCut), Media Encoding
+
+## Featured Projects
+- The Wed 24 (thewed24.com) - Full stack website for photographer showcasing album & films.
+- Nexgen MCA (nexgen-mca.vercel.app) - College web platform with dynamic pages and modern UI.
+- Xpensive Media (xpensivemedia.vercel.app) - Agency showcase website.
+- M S Properties - Real estate listing platform.
+
+## Services Offered
+- Full Stack Web Development (Websites, E-Commerce, Web Apps)
+- Digital Marketing & Content Creation
+- Video Editing & Motion Graphics

@@ -154,6 +154,7 @@ const Dashboard = () => {
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
+    category: "Portfolio",
     tags: "",
     live_site_link: "",
     imageFile: null as File | null,
@@ -165,6 +166,7 @@ const Dashboard = () => {
       setEditForm({
         name: project.name || "",
         description: project.description || "",
+        category: project.category || "Portfolio",
         tags: project.tags || "",
         live_site_link: project.live_site_link || "",
         imageFile: null,
@@ -196,6 +198,7 @@ const Dashboard = () => {
           {
             name: editForm.name,
             description: editForm.description,
+            category: editForm.category,
             tags: editForm.tags,
             image: imageUrl,
             live_site_link: editForm.live_site_link
@@ -222,6 +225,7 @@ const Dashboard = () => {
   const [projectForm, setProjectForm] = useState({
     name: "",
     description: "",
+    category: "Portfolio",
     tags: "",
     live_site_link: "",
     imageFile: null as File | null
@@ -373,6 +377,7 @@ const Dashboard = () => {
         {
           name: projectForm.name,
           description: projectForm.description,
+          category: projectForm.category || "Portfolio",
           tags: projectForm.tags,
           image: imageUrl,
           live_site_link: projectForm.live_site_link,
@@ -384,7 +389,7 @@ const Dashboard = () => {
 
       toast.success("Project created successfully!");
       setIsModalOpen(false);
-      setProjectForm({ name: "", description: "", tags: "", live_site_link: "", imageFile: null });
+      setProjectForm({ name: "", description: "", category: "Portfolio", tags: "", live_site_link: "", imageFile: null });
       fetchData();
     } catch (error: any) {
       console.error("[ADMIN_PROJECT_CREATE] Create failed", error);
@@ -551,33 +556,35 @@ const Dashboard = () => {
                              <button onClick={() => openEditModal(p)} className="p-2 bg-yellow-500/80 rounded-lg" title="Edit Project" aria-label="Edit Project"><Settings size={18} /></button>
                            </div>
                          </div>
-                         <div className="p-6 flex-1 flex flex-col">
-                           <div className="mb-3 flex items-center justify-between">
-                             <div className="flex items-center gap-2">
-                               <span className="text-[10px] uppercase tracking-wider text-white/40">Order</span>
-                               <select
-                                 value={index + 1}
-                                 onChange={(e) => setProjectOrderByNumber(p.$id, Number(e.target.value))}
-                                 className="rounded-md border border-white/10 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
-                                 aria-label={`Set order for ${p.name}`}
-                               >
-                                 {Array.from({ length: projects.length }, (_, i) => i + 1).map((position) => (
-                                   <option key={`${p.$id}-position-${position}`} value={position}>
-                                     #{position}
-                                   </option>
-                                 ))}
-                               </select>
-                             </div>
-                             <span className="text-[10px] uppercase tracking-wider text-white/40">Cloud order</span>
-                           </div>
-                           <h4 className="font-bold text-lg mb-2">{p.name}</h4>
-                           <p className="text-sm text-white/40 line-clamp-2 mb-4">{p.description}</p>
-                           <div className="flex flex-wrap gap-2 mb-2">
-                             {p.tags?.split(',').map((tag: any, i: any) => (
-                              <span key={i} className="text-[10px] bg-white/5 px-2 py-1 rounded-md uppercase font-bold tracking-wider text-white/60">#{tag.trim()}</span>
-                             ))}
-                           </div>
-                         </div>
+                           <div className="p-6 flex-1 flex flex-col">
+                            <div className="mb-3 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] uppercase tracking-wider text-white/40">Order</span>
+                                <select
+                                  value={index + 1}
+                                  onChange={(e) => setProjectOrderByNumber(p.$id, Number(e.target.value))}
+                                  className="rounded-md border border-white/10 bg-black/30 px-2 py-1 text-[11px] text-white outline-none"
+                                  aria-label={`Set order for ${p.name}`}
+                                >
+                                  {Array.from({ length: projects.length }, (_, i) => i + 1).map((position) => (
+                                    <option key={`${p.$id}-position-${position}`} value={position}>
+                                      #{position}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-indigo-500/30">
+                                {p.category || "Portfolio"}
+                              </span>
+                            </div>
+                            <h4 className="font-bold text-lg mb-2">{p.name}</h4>
+                            <p className="text-sm text-white/40 line-clamp-2 mb-4">{p.description}</p>
+                            <div className="flex flex-wrap gap-2 mb-2">
+                              {p.tags?.split(',').map((tag: any, i: any) => (
+                               <span key={i} className="text-[10px] bg-white/5 px-2 py-1 rounded-md uppercase font-bold tracking-wider text-white/60">#{tag.trim()}</span>
+                              ))}
+                            </div>
+                          </div>
                        </div>
                       ))}
                       {/* Edit Project Modal */}
@@ -590,6 +597,21 @@ const Dashboard = () => {
                            <form onSubmit={handleEditProject} className="space-y-4">
                              <input type="text" placeholder="Project Name" required value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
                              <textarea placeholder="Description" rows={3} required value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
+                             
+                             <div>
+                               <label className="block text-xs text-white/50 mb-1 ml-1 font-medium">Category</label>
+                               <select
+                                 value={editForm.category}
+                                 onChange={e => setEditForm({...editForm, category: e.target.value})}
+                                 className="w-full p-4 bg-black/40 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50 text-white"
+                               >
+                                 <option value="Wedding" className="bg-[#151030] text-white">Wedding</option>
+                                 <option value="Portfolio" className="bg-[#151030] text-white">Portfolio</option>
+                                 <option value="Real Estate" className="bg-[#151030] text-white">Real Estate</option>
+                                 <option value="Social Contribution" className="bg-[#151030] text-white">Social Contribution</option>
+                               </select>
+                             </div>
+
                              <input type="text" placeholder="Tags (comma separated: React, Tailwind)" value={editForm.tags} onChange={e => setEditForm({...editForm, tags: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
                              <input type="url" placeholder="Live Site Link" value={editForm.live_site_link} onChange={e => setEditForm({...editForm, live_site_link: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-yellow-500/50" />
                              <div className="flex items-center gap-4 p-4 border-2 border-dashed border-white/5 rounded-2xl">
@@ -682,6 +704,21 @@ const Dashboard = () => {
              <form onSubmit={handleCreateProject} className="space-y-4">
                 <input type="text" placeholder="Project Name" required value={projectForm.name} onChange={e => setProjectForm({...projectForm, name: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-indigo-500/50" />
                 <textarea placeholder="Description" rows={3} required value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-indigo-500/50" />
+                
+                <div>
+                  <label className="block text-xs text-white/50 mb-1 ml-1 font-medium">Category</label>
+                  <select
+                    value={projectForm.category}
+                    onChange={e => setProjectForm({...projectForm, category: e.target.value})}
+                    className="w-full p-4 bg-black/40 border border-white/5 rounded-2xl outline-none focus:border-indigo-500/50 text-white"
+                  >
+                    <option value="Wedding" className="bg-[#151030] text-white">Wedding</option>
+                    <option value="Portfolio" className="bg-[#151030] text-white">Portfolio</option>
+                    <option value="Real Estate" className="bg-[#151030] text-white">Real Estate</option>
+                    <option value="Social Contribution" className="bg-[#151030] text-white">Social Contribution</option>
+                  </select>
+                </div>
+
                 <input type="text" placeholder="Tags (comma separated: React, Tailwind)" value={projectForm.tags} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-indigo-500/50" />
                 <input type="url" placeholder="Live Site Link" value={projectForm.live_site_link} onChange={e => setProjectForm({...projectForm, live_site_link: e.target.value})} className="w-full p-4 bg-black/20 border border-white/5 rounded-2xl outline-none focus:border-indigo-500/50" />
                 

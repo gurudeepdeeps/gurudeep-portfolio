@@ -1,41 +1,113 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- UTF-8 Support -->
-    <meta charset="UTF-8" />
-    <!-- IE Compatibility -->
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <!-- Viewport -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Theme Color -->
-    <!-- <meta name="theme-color" content="#050816" /> -->
-    <!-- Description -->
-    <meta
-      name="description"
-      content="Gurudeep V - 3D Portfolio using React, Three.js and Typescript"
-    />
-    <!-- Keywords -->
-    <meta
-      name="keywords"
-      content="reactjs, react, porfolio-app, three-js, modern-ui/ux, js, javascript, html, css, tailwindcss"
-    />
-    <!-- Author -->
-    <meta name="author" content="Gurudeep V" />
-    <link rel="author" href="https://github.com/gurudeepdeeps" />
 
-    <!-- Icon -->
-    <link rel="icon" type="image/png" href="/logo.png" />
-    <link rel="apple-touch-icon" href="/logo.png" type="image/png" />
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Color Schema -->
-    <meta name="color-scheme" content="dark" />
+  <!-- Primary SEO Meta Tags -->
+  <title>Gurudeep V | Full Stack Developer & Content Creator Portfolio</title>
+  <meta name="title" content="Gurudeep V | Full Stack Developer & Content Creator Portfolio" />
+  <meta name="description"
+    content="Gurudeep V (Gurudeep Portfolio / Deeps Portfolio) - Full Stack Web Developer, Content Creator, and Editor specializing in React, TypeScript, Node.js, and modern web applications." />
+  <meta name="keywords"
+    content="Gurudeep V, Gurudeep V Portfolio, Gurudeep Portfolio, Deeps Portfolio, Gurudeep V Web Developer, Gurudeep V Developer, Full Stack Developer, React Developer, TypeScript, Three.js, Web Development" />
+  <meta name="author" content="Gurudeep V" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://gurudeep-portfolio.vercel.app/" />
 
-    <!-- Title -->
-    <title>Gurudeep V | Portfolio</title>
-  </head>
-  <body>
-    <noscript></noscript>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- Google Search Console Ownership Verification Placeholder -->
+  <meta name="google-site-verification" content="googleb8764467e2853b85" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/webp" href="/logo.webp" />
+  <link rel="apple-touch-icon" href="/logo.webp" type="image/webp" />
+
+  <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://gurudeep-portfolio.vercel.app/" />
+  <meta property="og:title" content="Gurudeep V | Full Stack Developer & Content Creator" />
+  <meta property="og:description"
+    content="Official Portfolio of Gurudeep V (Gurudeep Portfolio / Deeps Portfolio). Discover web development projects, skills, services, and work history." />
+  <meta property="og:image" content="https://gurudeep-portfolio.vercel.app/logo.webp" />
+  <meta property="og:site_name" content="Gurudeep V Portfolio" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://gurudeep-portfolio.vercel.app/" />
+  <meta name="twitter:title" content="Gurudeep V | Full Stack Developer & Content Creator" />
+  <meta name="twitter:description"
+    content="Official Portfolio of Gurudeep V (Gurudeep Portfolio / Deeps Portfolio). Discover web development projects, skills, services, and work history." />
+  <meta name="twitter:image" content="https://gurudeep-portfolio.vercel.app/logo.webp" />
+
+  <!-- Color Scheme -->
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#050816" />
+
+  <!-- Structured Data / JSON-LD for Google Search Console & AI Search Engines -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://gurudeep-portfolio.vercel.app/#person",
+          "name": "Gurudeep V",
+          "alternateName": ["Gurudeep Portfolio", "Deeps Portfolio", "Gurudeep V Portfolio", "Gurudeep V Web Developer"],
+          "url": "https://gurudeep-portfolio.vercel.app",
+          "image": "https://gurudeep-portfolio.vercel.app/logo.webp",
+          "jobTitle": "Full Stack Web Developer & Content Creator",
+          "sameAs": [
+            "https://github.com/gurudeepdeeps",
+            "https://www.linkedin.com/in/gurudeepv"
+          ],
+          "knowsAbout": [
+            "Web Development",
+            "React",
+            "TypeScript",
+            "JavaScript",
+            "Node.js",
+            "Three.js",
+            "Tailwind CSS",
+            "Video Editing",
+            "Content Creation"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://gurudeep-portfolio.vercel.app/#website",
+          "url": "https://gurudeep-portfolio.vercel.app",
+          "name": "Gurudeep V Portfolio",
+          "alternateName": ["Gurudeep Portfolio", "Deeps Portfolio", "Gurudeep V Portfolio"],
+          "description": "Official 3D Portfolio of Gurudeep V - Full Stack Web Developer & Content Creator.",
+          "publisher": {
+            "@id": "https://gurudeep-portfolio.vercel.app/#person"
+          },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "ProfilePage",
+          "@id": "https://gurudeep-portfolio.vercel.app/#profilepage",
+          "url": "https://gurudeep-portfolio.vercel.app",
+          "name": "Gurudeep V | Full Stack Developer & Content Creator Portfolio",
+          "isPartOf": {
+            "@id": "https://gurudeep-portfolio.vercel.app/#website"
+          },
+          "about": {
+            "@id": "https://gurudeep-portfolio.vercel.app/#person"
+          }
+        }
+      ]
+    }
+  </script>
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
