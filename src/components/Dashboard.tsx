@@ -350,7 +350,7 @@ const Dashboard = () => {
     } catch (e) {}
   }, [categories]);
 
-  const handleAddCategory = async (e: React.FormEvent) => {
+  const handleAddCategory = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = newCategoryName.trim();
     if (!trimmed) return;
@@ -360,20 +360,9 @@ const Dashboard = () => {
       return;
     }
 
-    try {
-      await databases.createDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_CATEGORIES,
-        ID.unique(),
-        { name: trimmed }
-      );
-    } catch (err: any) {
-      console.info("Categories collection document sync info:", err?.message);
-    }
-
     setCategories((prev) => Array.from(new Set([...prev, trimmed])));
     setNewCategoryName("");
-    toast.success(`Category "${trimmed}" saved to cloud!`);
+    toast.success(`Category "${trimmed}" added! Assign it to any project to save in Cloud DB.`);
   };
 
   const handleStartEditCategory = (cat: string) => {
@@ -477,28 +466,20 @@ const Dashboard = () => {
         databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ENQUIRIES, [Query.orderDesc("$createdAt")])
       ]);
 
-      let customCategories: string[] = [];
-      try {
-        const catRes = await databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_CATEGORIES);
-        customCategories = catRes.documents.map((d: any) => d.name).filter(Boolean);
-      } catch (e) {}
-
       console.info("[ADMIN_DATA] Fetch success", {
         projectsCount: projRes.documents.length,
         enquiriesCount: enqRes.documents.length,
-        customCategoriesCount: customCategories.length
       });
       const sortedProjects = sortProjectsByCustomOrder(projRes.documents);
       setProjects(sortedProjects);
 
-      // Extract categories directly from cloud documents + categories collection
+      // Extract categories directly from cloud documents
       const cloudCategories = Array.from(
-        new Set([
-          ...customCategories,
-          ...projRes.documents
+        new Set(
+          projRes.documents
             .map((doc: any) => doc.category)
             .filter((cat: any) => typeof cat === "string" && cat.trim() !== "")
-        ])
+        )
       ) as string[];
 
       if (cloudCategories.length > 0) {
