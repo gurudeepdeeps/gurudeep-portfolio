@@ -16,6 +16,7 @@ export const APPWRITE_DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID ||
 export const APPWRITE_COLLECTION_PROJECTS = import.meta.env.VITE_APPWRITE_COLLECTION_PROJECTS || "projects_collection";
 export const APPWRITE_COLLECTION_EXPERIENCE = import.meta.env.VITE_APPWRITE_COLLECTION_EXPERIENCE || "experience_collection";
 export const APPWRITE_COLLECTION_ENQUIRIES = import.meta.env.VITE_APPWRITE_COLLECTION_ENQUIRIES || "enquiries_collection";
+export const APPWRITE_COLLECTION_CATEGORIES = import.meta.env.VITE_APPWRITE_COLLECTION_CATEGORIES || "categories_collection";
 export const APPWRITE_BUCKET_ID = import.meta.env.VITE_APPWRITE_BUCKET_ID || "portfolio_bucket";
 
 export { client, account, databases, storage };

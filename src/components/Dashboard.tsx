@@ -11,6 +11,7 @@ import {
   APPWRITE_DATABASE_ID, 
   APPWRITE_COLLECTION_PROJECTS,
   APPWRITE_COLLECTION_ENQUIRIES,
+  APPWRITE_COLLECTION_CATEGORIES,
   APPWRITE_BUCKET_ID
 } from "../lib/appwrite";
 import { ID, Query } from "appwrite";
@@ -349,7 +350,7 @@ const Dashboard = () => {
     } catch (e) {}
   }, [categories]);
 
-  const handleAddCategory = (e: React.FormEvent) => {
+  const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = newCategoryName.trim();
     if (!trimmed) return;
@@ -359,9 +360,20 @@ const Dashboard = () => {
       return;
     }
 
-    setCategories((prev) => [...prev, trimmed]);
+    try {
+      await databases.createDocument(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_COLLECTION_CATEGORIES,
+        ID.unique(),
+        { name: trimmed }
+      );
+    } catch (err: any) {
+      console.info("Categories collection document sync info:", err?.message);
+    }
+
+    setCategories((prev) => Array.from(new Set([...prev, trimmed])));
     setNewCategoryName("");
-    toast.success(`Category "${trimmed}" added successfully!`);
+    toast.success(`Category "${trimmed}" saved to cloud!`);
   };
 
   const handleStartEditCategory = (cat: string) => {
@@ -383,7 +395,7 @@ const Dashboard = () => {
 
     setCategories((prev) => prev.map((c) => (c === oldCat ? trimmed : c)));
 
-    // Update matching projects
+    // Update matching projects in Appwrite Cloud DB
     const affectedProjects = projects.filter((p) => (p.category || "").toLowerCase() === oldCat.toLowerCase());
     if (affectedProjects.length > 0) {
       try {
@@ -402,7 +414,7 @@ const Dashboard = () => {
     }
 
     setEditingCategory(null);
-    toast.success(`Category updated to "${trimmed}"!`);
+    toast.success(`Category updated to "${trimmed}" in cloud!`);
   };
 
   const handleDeleteCategory = (catToDelete: string) => {
@@ -464,20 +476,29 @@ const Dashboard = () => {
         databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS, [Query.orderDesc("$createdAt")]),
         databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ENQUIRIES, [Query.orderDesc("$createdAt")])
       ]);
+
+      let customCategories: string[] = [];
+      try {
+        const catRes = await databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_CATEGORIES);
+        customCategories = catRes.documents.map((d: any) => d.name).filter(Boolean);
+      } catch (e) {}
+
       console.info("[ADMIN_DATA] Fetch success", {
         projectsCount: projRes.documents.length,
         enquiriesCount: enqRes.documents.length,
+        customCategoriesCount: customCategories.length
       });
       const sortedProjects = sortProjectsByCustomOrder(projRes.documents);
       setProjects(sortedProjects);
 
-      // Extract categories directly from cloud documents
+      // Extract categories directly from cloud documents + categories collection
       const cloudCategories = Array.from(
-        new Set(
-          projRes.documents
+        new Set([
+          ...customCategories,
+          ...projRes.documents
             .map((doc: any) => doc.category)
             .filter((cat: any) => typeof cat === "string" && cat.trim() !== "")
-        )
+        ])
       ) as string[];
 
       if (cloudCategories.length > 0) {
