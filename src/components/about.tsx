@@ -54,10 +54,8 @@ export const About = () => {
           variants={fadeIn(undefined, undefined, 0.1, 1)}
           className="empty-4 text-secondary text-[17px] max-w-3xl leading-[30px]"
         >
-          I'm a passionate web developer who loves building modern applications. 
-          I work with React, Node.js, and TypeScript to create clean, responsive websites. 
-          My goal is to turn complex problems into simple, beautiful solutions. 
-          Let's build something amazing together!
+          Full-Stack Developer building production-ready web applications with React, TypeScript and modern backend technologies.
+          I design, develop and deploy real-world products for businesses, startups and organizations—from responsive websites to custom web applications.
         </motion.p>
 
         {/* Service Card */}
