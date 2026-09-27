@@ -463,7 +463,7 @@ const Dashboard = () => {
       const user = await getCurrentUser();
       if (!user) {
         console.warn("[DASHBOARD_AUTH]: No active session, redirecting to login");
-        navigate("/login");
+        navigate("/login?session_expired=true");
       } else {
         console.log("[DASHBOARD_AUTH]: User authenticated", user.email);
         setUserData(user);

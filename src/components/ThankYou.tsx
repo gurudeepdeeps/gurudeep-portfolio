@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle2, Home, Briefcase, ArrowLeft, Sparkles, MessageSquare } from "lucide-react";
+import { CheckCircle2, Home, Briefcase, ArrowLeft, Sparkles, MessageSquare, ChevronRight } from "lucide-react";
 import StarsCanvas from "./canvas/stars";
 import SEOHead from "./SEOHead";
 
@@ -10,6 +10,7 @@ export const ThankYou = () => {
       <SEOHead
         title="Thank You! | Message Sent | Gurudeep V Portfolio"
         description="Thank you for reaching out to Gurudeep V. Your message has been sent successfully!"
+        canonicalUrl="https://gurudeep-portfolio.vercel.app/thank-you"
       />
 
       {/* Background Starfield */}
@@ -18,7 +19,7 @@ export const ThankYou = () => {
       </div>
 
       {/* Header Logo */}
-      <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+      <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-white/5">
         <Link to="/" className="flex items-center gap-3 group">
           <img
             src="/logo.webp"
@@ -39,7 +40,24 @@ export const ThankYou = () => {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 max-w-2xl mx-auto px-6 py-12 text-center flex flex-col items-center justify-center flex-1">
+      <main className="relative z-10 max-w-2xl mx-auto px-6 py-8 text-center flex flex-col items-center justify-center flex-1">
+        {/* Breadcrumb Navigation */}
+        <nav aria-label="Breadcrumb" className="mb-6">
+          <ol className="flex items-center gap-2 text-xs text-white/50">
+            <li>
+              <Link to="/" className="hover:text-white transition-colors flex items-center gap-1">
+                <Home size={13} /> Home
+              </Link>
+            </li>
+            <li>
+              <ChevronRight size={12} className="text-white/30" />
+            </li>
+            <li className="text-emerald-400 font-medium" aria-current="page">
+              Thank You
+            </li>
+          </ol>
+        </nav>
+
         {/* Animated Success Badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}

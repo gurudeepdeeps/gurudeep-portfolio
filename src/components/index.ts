@@ -29,6 +29,19 @@ import Skeleton, {
   TableRowSkeleton,
 } from "./Skeleton";
 
+import ErrorBoundary from "./ErrorBoundary";
+import OfflineNotice from "./OfflineNotice";
+import EmptyState from "./EmptyState";
+import Unauthorized from "./Unauthorized";
+import CookiePreferencesModal from "./CookiePreferencesModal";
+import Support from "./Support";
+import PrivacyPolicy from "./legal/PrivacyPolicy";
+import TermsOfService from "./legal/TermsOfService";
+import CookiePolicy from "./legal/CookiePolicy";
+import Disclaimer from "./legal/Disclaimer";
+import AccessibilityStatement from "./legal/AccessibilityStatement";
+import SecurityPolicy from "./legal/SecurityPolicy";
+
 export {
   About,
   ComputersCanvas,
@@ -46,6 +59,18 @@ export {
   WhatsAppButton,
   ThankYou,
   CookieBanner,
+  ErrorBoundary,
+  OfflineNotice,
+  EmptyState,
+  Unauthorized,
+  CookiePreferencesModal,
+  Support,
+  PrivacyPolicy,
+  TermsOfService,
+  CookiePolicy,
+  Disclaimer,
+  AccessibilityStatement,
+  SecurityPolicy,
   Skeleton,
   ProjectCardSkeleton,
   CategoryPillSkeleton,

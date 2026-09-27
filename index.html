@@ -50,10 +50,20 @@
   <meta name="color-scheme" content="dark" />
   <meta name="theme-color" content="#050816" />
 
+  <!-- Geo Meta Tags for GEO (Generative Engine / Geographic Optimization) -->
+  <meta name="geo.region" content="IN-KA" />
+  <meta name="geo.placename" content="Bengaluru" />
+  <meta name="geo.position" content="12.9716;77.5946" />
+  <meta name="ICBM" content="12.9716, 77.5946" />
+
+  <!-- AEO (Answer Engine Optimization) & AI Knowledge Directives -->
+  <meta name="chatgpt-description" content="Official portfolio and engineering case studies of Gurudeep V, Full Stack Developer and Video Editor based in Bengaluru, India. Builds modern React, Next.js, TypeScript, and Appwrite cloud web applications." />
+  <link rel="alternate" type="text/plain" href="https://gurudeep-portfolio.vercel.app/llms.txt" title="LLM Context" />
+
   <!-- Vercel Web Analytics -->
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 
-  <!-- Structured Data / JSON-LD for Google Search Console & AI Search Engines -->
+  <!-- Structured Data / JSON-LD for Google, Search Console, GEO & AEO Engines -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -66,18 +76,29 @@
           "url": "https://gurudeep-portfolio.vercel.app",
           "image": "https://gurudeep-portfolio.vercel.app/logo.webp",
           "jobTitle": "Full Stack Web Developer & Content Creator",
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Freelance / Independent"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Bengaluru",
+            "addressRegion": "Karnataka",
+            "addressCountry": "IN"
+          },
           "sameAs": [
             "https://github.com/gurudeepdeeps",
             "https://www.linkedin.com/in/gurudeepv"
           ],
           "knowsAbout": [
             "Web Development",
-            "React",
+            "React.js",
             "TypeScript",
             "JavaScript",
             "Node.js",
             "Three.js",
             "Tailwind CSS",
+            "Appwrite Cloud",
             "Video Editing",
             "Content Creation"
           ]
@@ -88,7 +109,7 @@
           "url": "https://gurudeep-portfolio.vercel.app",
           "name": "Gurudeep V Portfolio",
           "alternateName": ["Gurudeep Portfolio", "Deeps Portfolio", "Gurudeep V Portfolio"],
-          "description": "Official 3D Portfolio of Gurudeep V - Full Stack Web Developer & Content Creator.",
+          "description": "Official 3D Portfolio of Gurudeep V - Full Stack Web Developer & Content Creator based in Bengaluru, India.",
           "publisher": {
             "@id": "https://gurudeep-portfolio.vercel.app/#person"
           },
@@ -105,6 +126,112 @@
           "mainEntity": {
             "@id": "https://gurudeep-portfolio.vercel.app/#person"
           }
+        },
+        {
+          "@type": "ProfessionalService",
+          "@id": "https://gurudeep-portfolio.vercel.app/#business",
+          "name": "Gurudeep V - Web Development & Creative Digital Solutions",
+          "image": "https://gurudeep-portfolio.vercel.app/logo.webp",
+          "telephone": "+91-7353577717",
+          "email": "gurudeepv55@gmail.com",
+          "url": "https://gurudeep-portfolio.vercel.app",
+          "priceRange": "$$",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Bengaluru",
+            "addressRegion": "Karnataka",
+            "addressCountry": "IN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "12.9716",
+            "longitude": "77.5946"
+          },
+          "founder": {
+            "@id": "https://gurudeep-portfolio.vercel.app/#person"
+          },
+          "areaServed": [
+            {
+              "@type": "Country",
+              "name": "India"
+            },
+            {
+              "@type": "Country",
+              "name": "Worldwide"
+            }
+          ],
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Development & Creative Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Full Stack Web Development",
+                  "description": "Custom modern web applications, high converting landing pages, and interactive 3D portfolios built with React, Next.js, and TypeScript."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Video Editing & Content Creation",
+                  "description": "Professional video editing, motion graphics, and social campaign editing using Premiere Pro, After Effects, and CapCut."
+                }
+              }
+            ]
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "09:00",
+            "closes": "19:00"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://gurudeep-portfolio.vercel.app/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What web development technologies does Gurudeep V specialize in?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Gurudeep V specializes in modern React.js, Next.js, TypeScript, Three.js 3D animations, Tailwind CSS, Node.js, and Appwrite Cloud database architectures."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Where is Gurudeep V located and does he work with international clients?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Gurudeep V is based in Bengaluru, Karnataka, India, and provides full-stack web development and video editing services to clients worldwide."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the typical turnaround time for a web project?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Standard portfolio websites or landing pages take 1 to 2 weeks, while complex full-stack web platforms with backend authentication and databases typically take 3 to 6 weeks."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How can prospective clients contact Gurudeep V?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Clients can connect directly via WhatsApp (+91-7353577717), email (gurudeepv55@gmail.com), or the portfolio contact inquiry form."
+              }
+            }
+          ]
         }
       ]
     }

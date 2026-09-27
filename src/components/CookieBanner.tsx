@@ -62,7 +62,10 @@ export const CookieBanner = () => {
               </div>
 
               <p className="text-xs text-white/70 leading-relaxed">
-                This website uses essential cookies and anonymous analytics to enhance performance and optimize user experience.
+                This website uses essential cookies and anonymous analytics to enhance performance and optimize user experience. Read our{" "}
+                <a href="/cookies" className="text-indigo-400 underline hover:text-indigo-300">
+                  Cookie Policy
+                </a>.
               </p>
 
               <div className="flex items-center gap-2 pt-2">

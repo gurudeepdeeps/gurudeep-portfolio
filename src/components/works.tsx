@@ -6,6 +6,7 @@ import { cn } from "../utils/lib";
 import { databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_PROJECTS } from "../lib/appwrite";
 import { Query } from "appwrite";
 import { ProjectCardSkeleton, CategoryPillSkeleton } from "./Skeleton";
+import EmptyState from "./EmptyState";
 
 const FALLBACK_PROJECTS: ProjectData[] = [
   {
@@ -311,9 +312,12 @@ export const Works = () => {
         )}
 
         {!loading && filteredProjects.length === 0 && (
-          <div className="w-full py-12 text-center text-white/50 bg-tertiary/20 rounded-2xl border border-white/5">
-            No projects found under "{selectedCategory}".
-          </div>
+          <EmptyState
+            title={`No projects under "${selectedCategory}"`}
+            description={`There are currently no active projects categorized under "${selectedCategory}". Select another category or view all projects.`}
+            actionLabel="View All Projects"
+            onAction={() => setSelectedCategory("All")}
+          />
         )}
       </div>
     </section>

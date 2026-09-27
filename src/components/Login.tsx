@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { login, getCurrentUser, hasAppwriteSessionCookie } from "../lib/appwrite";
 import { motion } from "framer-motion";
-import { LogIn, User, Lock, Loader2 } from "lucide-react";
+import { LogIn, User, Lock, Loader2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import SEOHead from "./SEOHead";
 
@@ -10,9 +10,15 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const isSessionExpired = searchParams.get("session_expired") === "true";
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (isSessionExpired) {
+      toast.warning("Your session has expired. Please sign in again.");
+    }
+
     const checkAuth = async () => {
       if (!hasAppwriteSessionCookie()) {
         console.info("[AUTH_LOGIN] No session state found, skipping account check");
@@ -25,7 +31,7 @@ const Login = () => {
       }
     };
     checkAuth();
-  }, [navigate]);
+  }, [navigate, isSessionExpired]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +74,13 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-white mb-2">Admin Panel</h1>
           <p className="text-white-100/60 text-sm">Welcome back, Gurudeep.</p>
         </div>
+
+        {isSessionExpired && (
+          <div className="mb-6 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-3 text-amber-300 text-xs">
+            <AlertCircle size={18} className="shrink-0 text-amber-400" />
+            <span>Your administrative session has expired. Please authenticate again to resume.</span>
+          </div>
+        )}
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">

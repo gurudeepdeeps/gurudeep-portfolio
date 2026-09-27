@@ -9,7 +9,7 @@ import { styles } from "../styles";
 import { slideIn } from "../utils/motion";
 import { databases, APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ENQUIRIES } from "../lib/appwrite";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AlertCircle, Send, CheckCircle2 } from "lucide-react";
 import { cn } from "../utils/lib";
 
@@ -23,7 +23,8 @@ export const Contact = () => {
     phone: "",
     message: "",
   });
-  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+  const [consent, setConsent] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string; consent?: string }>({});
   const [loading, setLoading] = useState(false);
 
   // handle form change
@@ -41,7 +42,7 @@ export const Contact = () => {
 
   // validate form on submit
   const validateForm = () => {
-    const newErrors: { name?: string; email?: string; message?: string } = {};
+    const newErrors: { name?: string; email?: string; message?: string; consent?: string } = {};
     const { name, email, message } = form;
 
     if (name.trim().length < 3) {
@@ -56,6 +57,10 @@ export const Contact = () => {
 
     if (message.trim().length < 5) {
       newErrors.message = "Message must be at least 5 characters.";
+    }
+
+    if (!consent) {
+      newErrors.consent = "Please provide your consent to process your contact details as per the DPDP Act.";
     }
 
     setErrors(newErrors);
@@ -95,6 +100,7 @@ export const Contact = () => {
         phone: "",
         message: "",
       });
+      setConsent(false);
 
       // Redirect to Thank You Page
       navigate("/thank-you");
@@ -207,12 +213,49 @@ export const Contact = () => {
               )}
             </label>
 
+            {/* DPDP Act 2023 Compliant Consent Section */}
+            <div className="flex flex-col gap-2 p-4 rounded-xl bg-tertiary/70 border border-white/5">
+              <label className="flex items-start gap-3 cursor-pointer group select-none">
+                <input
+                  type="checkbox"
+                  id="dpdp-consent"
+                  checked={consent}
+                  onChange={(e) => {
+                    setConsent(e.target.checked);
+                    if (errors.consent) {
+                      setErrors((prev) => ({ ...prev, consent: undefined }));
+                    }
+                  }}
+                  disabled={loading}
+                  className="mt-1 w-4 h-4 rounded border-gray-400 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 bg-[#0a0a0a] cursor-pointer shrink-0"
+                />
+                <span className="text-xs text-white/80 leading-relaxed">
+                  I consent to the collection and processing of my name, email, phone number, and message by Gurudeep V under the{" "}
+                  <strong className="text-white font-medium">Digital Personal Data Protection (DPDP) Act, 2023</strong> solely for responding to my project inquiry. I understand I may withdraw my consent or request data erasure at any time as detailed in the{" "}
+                  <Link
+                    to="/privacy"
+                    target="_blank"
+                    className="text-indigo-400 underline hover:text-indigo-300 font-medium"
+                  >
+                    Privacy Policy
+                  </Link>.
+                </span>
+              </label>
+
+              {errors.consent && (
+                <span className="text-red-400 text-xs flex items-center gap-1.5 font-medium pl-7">
+                  <AlertCircle size={14} /> {errors.consent}
+                </span>
+              )}
+            </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="bg-tertiary py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl disabled:opacity-50"
+              className="bg-tertiary py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl disabled:opacity-50 flex items-center gap-2 hover:bg-tertiary/80 transition-all"
             >
-              {loading ? "Sending..." : "Send"}
+              <Send size={16} />
+              {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
         </motion.div>

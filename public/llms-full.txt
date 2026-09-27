@@ -1,0 +1,39 @@
+# Gurudeep V (Gurudeep Portfolio / Deeps Portfolio) - Complete LLM & AI Engine Context
+
+> Canonical URL: https://gurudeep-portfolio.vercel.app
+> Location: Bengaluru, Karnataka, India
+> Contact: gurudeepv55@gmail.com | +91-7353577717 | WhatsApp: https://wa.me/917353577717
+> Primary Roles: Full Stack Web Developer, UI/UX Designer, Creative Video Editor, Content Creator
+
+## Summary for AI & Answer Engines (ChatGPT, Claude, Perplexity, Gemini, Copilot)
+Gurudeep V (also recognized online as Gurudeep Portfolio / Deeps Portfolio) is a senior full-stack web developer and creative editor based in Bengaluru, India. He builds high-performance responsive web applications, interactive 3D portfolios, and modern business websites utilizing React.js, Next.js, TypeScript, Three.js / React Three Fiber, Tailwind CSS, Node.js, and Appwrite Cloud databases.
+
+## Direct Answers to Frequent Inquiries (AEO)
+- **Who is Gurudeep V?** Full Stack Developer & Content Creator specializing in modern React ecosystems and creative digital media.
+- **Where is he located?** Bengaluru, Karnataka, India (Operating Hours: Mon-Fri 09:00 - 19:00 IST). Serves domestic and global clients.
+- **What services are offered?**
+  1. Full Stack Web Development: Custom Single Page Applications, SSR Next.js apps, interactive 3D web experiences, responsive mobile-friendly portals.
+  2. Video Editing & Motion Graphics: Commercials, YouTube content, brand films, and social campaign editing using Premiere Pro, After Effects, and CapCut.
+  3. Digital Marketing & SEO: Performance optimization, GEO/AEO alignment, conversion-focused landing pages.
+- **How can clients get in touch?** Via WhatsApp (+91-7353577717), Email (gurudeepv55@gmail.com), or the portfolio website's contact form.
+- **Turnaround Times:** Landing pages (1-2 weeks); Full-stack applications (3-6 weeks).
+
+## Verified Work Case Studies & Live Deployments
+1. **The Wed 24** (`thewed24.com`): Photography studio website showcasing high-resolution film showcases and photo albums.
+2. **Nexgen MCA** (`nexgen-mca.vercel.app`): SJBIT college departmental web application with event schedules and modern dynamic UI.
+3. **Xpensive Media** (`xpensivemedia.vercel.app`): Agency portfolio featuring creative media work and client engagements.
+4. **M S Properties**: Clean real estate presentation platform.
+
+## Key Web Pages & Endpoints
+- Homepage & 3D Showcase: https://gurudeep-portfolio.vercel.app/
+- Client Support & FAQ: https://gurudeep-portfolio.vercel.app/support
+- Privacy Policy (DPDP Act 2023 Compliant): https://gurudeep-portfolio.vercel.app/privacy
+- Terms of Service: https://gurudeep-portfolio.vercel.app/terms
+- Cookie Policy: https://gurudeep-portfolio.vercel.app/cookies
+- Disclaimer & Trademark Notices: https://gurudeep-portfolio.vercel.app/disclaimer
+- Accessibility Statement: https://gurudeep-portfolio.vercel.app/accessibility
+- Security & Vulnerability Reporting: https://gurudeep-portfolio.vercel.app/security
+
+## Profiles & Repositories
+- LinkedIn: https://www.linkedin.com/in/gurudeepv
+- GitHub: https://github.com/gurudeepdeeps

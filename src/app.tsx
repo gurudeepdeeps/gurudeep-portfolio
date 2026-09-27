@@ -13,7 +13,16 @@ import {
   SEOHead,
   WhatsAppButton,
   ThankYou,
-  CookieBanner,
+  ErrorBoundary,
+  OfflineNotice,
+  Unauthorized,
+  Support,
+  PrivacyPolicy,
+  TermsOfService,
+  CookiePolicy,
+  Disclaimer,
+  AccessibilityStatement,
+  SecurityPolicy,
 } from "./components";
 import Footer from "./components/footer";
 import { Toaster } from "sonner";
@@ -46,18 +55,28 @@ const Home = () => {
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Toaster position="bottom-right" richColors theme="dark" />
-      <WhatsAppButton />
-      <CookieBanner />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/thank-you" element={<ThankYou />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/admin/*" element={<Dashboard />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <OfflineNotice />
+        <Toaster position="bottom-right" richColors theme="dark" />
+        <WhatsAppButton />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/thank-you" element={<ThankYou />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin/*" element={<Dashboard />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
+          <Route path="/accessibility" element={<AccessibilityStatement />} />
+          <Route path="/security" element={<SecurityPolicy />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 };
 

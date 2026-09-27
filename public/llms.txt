@@ -3,7 +3,7 @@
 > Official portfolio website of Gurudeep V: https://gurudeep-portfolio.vercel.app
 
 ## Overview
-Gurudeep V is a Full Stack Web Developer, Content Creator, and Video Editor based in India.
+Gurudeep V is a Full Stack Web Developer, Content Creator, and Video Editor based in Bengaluru, Karnataka, India.
 
 ## Search Queries & Aliases
 - Gurudeep V
@@ -15,12 +15,16 @@ Gurudeep V is a Full Stack Web Developer, Content Creator, and Video Editor base
 
 ## Primary Links
 - Official Website: https://gurudeep-portfolio.vercel.app
+- Client Support & FAQ: https://gurudeep-portfolio.vercel.app/support
+- Privacy Policy: https://gurudeep-portfolio.vercel.app/privacy
+- Terms of Service: https://gurudeep-portfolio.vercel.app/terms
+- Cookie Policy: https://gurudeep-portfolio.vercel.app/cookies
 - LinkedIn: https://www.linkedin.com/in/gurudeepv
 - GitHub: https://github.com/gurudeepdeeps
 
 ## Technical Expertise
 - Frontend: React.js, TypeScript, JavaScript, Tailwind CSS, Three.js, HTML5, CSS3, Vite
-- Backend & Cloud: Node.js, MongoDB, Appwrite
+- Backend & Cloud: Node.js, MongoDB, Appwrite Cloud
 - Content Creation: Video Editing (After Effects, Premiere Pro, CapCut), Media Encoding
 
 ## Featured Projects

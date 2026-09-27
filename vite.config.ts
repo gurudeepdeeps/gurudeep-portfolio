@@ -7,4 +7,17 @@ export default defineConfig({
   server: {
     host: true,
   },
+  build: {
+    sourcemap: false,
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ["three", "@react-three/fiber", "@react-three/drei"],
+          vendor: ["react", "react-dom", "react-router-dom", "framer-motion"],
+          appwrite: ["appwrite"],
+        },
+      },
+    },
+  },
 });
